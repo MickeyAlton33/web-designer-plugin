@@ -1,0 +1,7 @@
+{
+  "name": "web-designer",
+  "displayName": "Web Designer",
+  "description": "Transforms AI code generation into award-winning web design.",
+  "version": "1.0.0",
+  "skills": "./skills/"
+}

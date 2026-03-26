@@ -1,0 +1,1508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KAI_REDUX // DESIGNER.SYS v2.0</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@100;200;300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --green: #00ff41;
+  --green-dim: #00cc33;
+  --green-dark: #009922;
+  --amber: #ffb000;
+  --amber-dim: #cc8d00;
+  --bg: #050505;
+  --bezel: #1a1a1a;
+  --bezel-light: #2a2a2a;
+  --bezel-dark: #0a0a0a;
+  --screen-bg: #030803;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+}
+
+body {
+  background: #000;
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--green);
+  overflow: hidden;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ========================
+   MONITOR BEZEL / FRAME
+   ======================== */
+.monitor-outer {
+  width: 96vw;
+  height: 94vh;
+  max-width: 1400px;
+  max-height: 900px;
+  background: linear-gradient(145deg, #2a2a2a 0%, #1a1a1a 30%, #0f0f0f 70%, #1a1a1a 100%);
+  border-radius: 24px;
+  padding: 28px 32px 36px 32px;
+  position: relative;
+  box-shadow:
+    0 0 0 2px #333,
+    0 0 0 4px #111,
+    0 20px 60px rgba(0,0,0,0.8),
+    inset 0 1px 0 rgba(255,255,255,0.06);
+}
+
+.monitor-outer::before {
+  content: '';
+  position: absolute;
+  top: 6px;
+  left: 40px;
+  right: 40px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
+}
+
+.bezel-label {
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  font-weight: 300;
+  color: #444;
+  letter-spacing: 6px;
+  text-transform: uppercase;
+}
+
+.bezel-led {
+  position: absolute;
+  bottom: 14px;
+  right: 40px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--green-dark);
+  box-shadow: 0 0 6px var(--green-dark);
+  animation: led-pulse 2s ease-in-out infinite;
+}
+
+@keyframes led-pulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; box-shadow: 0 0 10px var(--green); }
+}
+
+/* ========================
+   SCREEN AREA
+   ======================== */
+.monitor-screen {
+  width: 100%;
+  height: 100%;
+  background: var(--screen-bg);
+  border-radius: 8px;
+  position: relative;
+  overflow: hidden;
+  transform: perspective(800px) rotateX(0.4deg);
+  box-shadow:
+    inset 0 0 80px rgba(0,0,0,0.6),
+    inset 0 0 4px rgba(0,255,65,0.03);
+}
+
+/* Scanlines */
+.scanlines {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0,0,0,0.15) 2px,
+    rgba(0,0,0,0.15) 4px
+  );
+  pointer-events: none;
+  z-index: 10;
+  animation: scanline-scroll 8s linear infinite;
+}
+
+@keyframes scanline-scroll {
+  0% { background-position: 0 0; }
+  100% { background-position: 0 200px; }
+}
+
+/* Moving scanline bar */
+.scanline-bar {
+  position: absolute;
+  top: -10%;
+  left: 0;
+  right: 0;
+  height: 8%;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(0,255,65,0.02) 40%,
+    rgba(0,255,65,0.04) 50%,
+    rgba(0,255,65,0.02) 60%,
+    transparent 100%
+  );
+  pointer-events: none;
+  z-index: 11;
+  animation: scanline-bar-move 6s linear infinite;
+}
+
+@keyframes scanline-bar-move {
+  0% { top: -10%; }
+  100% { top: 110%; }
+}
+
+/* Vignette */
+.vignette {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: radial-gradient(
+    ellipse at center,
+    transparent 50%,
+    rgba(0,0,0,0.3) 75%,
+    rgba(0,0,0,0.7) 100%
+  );
+  pointer-events: none;
+  z-index: 12;
+}
+
+/* Screen flicker */
+.screen-flicker {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  pointer-events: none;
+  z-index: 9;
+  animation: flicker 0.08s infinite alternate;
+}
+
+@keyframes flicker {
+  0% { opacity: 1; }
+  100% { opacity: 0.97; }
+}
+
+/* CRT RGB subpixel effect */
+.crt-rgb {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: repeating-linear-gradient(
+    90deg,
+    rgba(255,0,0,0.02) 0px,
+    rgba(0,255,0,0.02) 1px,
+    rgba(0,0,255,0.02) 2px,
+    transparent 3px
+  );
+  background-size: 3px 100%;
+  pointer-events: none;
+  z-index: 8;
+}
+
+/* Noise grain overlay */
+.noise {
+  position: absolute;
+  top: -50%; left: -50%;
+  width: 200%; height: 200%;
+  pointer-events: none;
+  z-index: 7;
+  opacity: 0.035;
+  animation: noise-move 0.2s steps(4) infinite;
+}
+
+@keyframes noise-move {
+  0% { transform: translate(0, 0); }
+  25% { transform: translate(-2%, -3%); }
+  50% { transform: translate(1%, 2%); }
+  75% { transform: translate(-1%, 1%); }
+  100% { transform: translate(2%, -2%); }
+}
+
+/* ========================
+   BOOT SEQUENCE
+   ======================== */
+.boot-overlay {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: #000;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.boot-line {
+  width: 0;
+  height: 2px;
+  background: #fff;
+  box-shadow: 0 0 20px #fff, 0 0 40px rgba(255,255,255,0.5);
+  transition: none;
+}
+
+.boot-static {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: #000;
+  z-index: 99;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.boot-static canvas {
+  width: 100%;
+  height: 100%;
+}
+
+/* ========================
+   CONTENT AREA
+   ======================== */
+.screen-content {
+  position: relative;
+  z-index: 5;
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 30px 40px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--green-dark) transparent;
+  opacity: 0;
+}
+
+.screen-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.screen-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.screen-content::-webkit-scrollbar-thumb {
+  background: var(--green-dark);
+  border-radius: 3px;
+}
+
+.screen-content::-webkit-scrollbar-thumb:hover {
+  background: var(--green-dim);
+}
+
+/* ========================
+   TYPOGRAPHY & GLOW
+   ======================== */
+.glow {
+  text-shadow: 0 0 5px var(--green), 0 0 10px rgba(0,255,65,0.3);
+}
+
+.glow-amber {
+  color: var(--amber);
+  text-shadow: 0 0 5px var(--amber), 0 0 10px rgba(255,176,0,0.3);
+}
+
+.dim {
+  color: var(--green-dark);
+  text-shadow: none;
+}
+
+.prompt {
+  color: var(--green-dim);
+}
+
+/* ========================
+   HERO SECTION
+   ======================== */
+.hero {
+  min-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 40px 0;
+}
+
+.hero-line {
+  font-size: 14px;
+  font-weight: 400;
+  margin-bottom: 4px;
+  line-height: 1.7;
+  opacity: 0;
+  white-space: pre;
+}
+
+.hero-line.visible {
+  opacity: 1;
+}
+
+.hero-ascii {
+  font-size: 13px;
+  line-height: 1.25;
+  margin: 20px 0;
+  opacity: 0;
+  white-space: pre;
+  font-weight: 700;
+}
+
+.hero-ascii.visible {
+  opacity: 1;
+}
+
+.cursor-blink {
+  display: inline-block;
+  width: 10px;
+  height: 18px;
+  background: var(--green);
+  vertical-align: middle;
+  margin-left: 2px;
+  animation: blink-cursor 1s step-end infinite;
+  box-shadow: 0 0 5px var(--green);
+}
+
+@keyframes blink-cursor {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* ========================
+   NAVIGATION
+   ======================== */
+.nav-bar {
+  margin: 40px 0;
+  padding: 16px 0;
+  border-top: 1px solid var(--green-dark);
+  border-bottom: 1px solid var(--green-dark);
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  font-size: 14px;
+}
+
+.nav-cmd {
+  cursor: pointer;
+  padding: 4px 12px;
+  color: var(--green-dim);
+  text-shadow: 0 0 5px rgba(0,255,65,0.2);
+  position: relative;
+  transition: color 0.15s, text-shadow 0.15s;
+  user-select: none;
+}
+
+.nav-cmd::before {
+  content: '> ';
+  color: var(--amber);
+  text-shadow: 0 0 5px rgba(255,176,0,0.3);
+}
+
+.nav-cmd:hover {
+  color: var(--green);
+  text-shadow: 0 0 8px var(--green), 0 0 20px rgba(0,255,65,0.4);
+}
+
+.nav-cmd.flash {
+  background: var(--green);
+  color: var(--bg);
+  text-shadow: none;
+}
+
+.nav-separator {
+  color: var(--green-dark);
+  user-select: none;
+  line-height: 1.8;
+}
+
+/* ========================
+   SECTIONS
+   ======================== */
+.section {
+  margin: 60px 0;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.section.in-view {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.section-header {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 24px;
+  letter-spacing: 2px;
+}
+
+.section-header .bracket {
+  color: var(--green-dark);
+}
+
+.section-divider {
+  border: none;
+  height: 1px;
+  background: linear-gradient(90deg, var(--green-dark), transparent);
+  margin: 8px 0 24px 0;
+}
+
+/* ========================
+   ABOUT SECTION
+   ======================== */
+.about-text {
+  font-size: 14px;
+  line-height: 1.8;
+  max-width: 700px;
+  font-weight: 300;
+}
+
+.about-text .typed-line {
+  display: block;
+  margin-bottom: 8px;
+  opacity: 0;
+}
+
+.about-text .typed-line.visible {
+  opacity: 1;
+}
+
+.stat-row {
+  margin-top: 24px;
+  display: flex;
+  gap: 32px;
+  flex-wrap: wrap;
+}
+
+.stat-item {
+  font-size: 12px;
+  color: var(--green-dark);
+}
+
+.stat-item .stat-val {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--green);
+  text-shadow: 0 0 8px var(--green);
+  display: block;
+  margin-top: 4px;
+}
+
+/* ========================
+   PROJECTS SECTION
+   ======================== */
+.project-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.project-item {
+  padding: 12px 16px;
+  cursor: pointer;
+  position: relative;
+  border-left: 2px solid transparent;
+  transition: border-color 0.2s, background 0.2s;
+  user-select: none;
+}
+
+.project-item:hover {
+  border-left-color: var(--green);
+  background: rgba(0,255,65,0.02);
+}
+
+.project-item.active {
+  border-left-color: var(--amber);
+  background: rgba(255,176,0,0.03);
+}
+
+.project-name {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.project-name .exe {
+  color: var(--amber);
+  text-shadow: 0 0 5px rgba(255,176,0,0.3);
+}
+
+.project-meta {
+  font-size: 11px;
+  color: var(--green-dark);
+  margin-top: 2px;
+}
+
+.project-details {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease;
+  padding-left: 20px;
+}
+
+.project-item.active .project-details {
+  max-height: 300px;
+}
+
+.project-details-inner {
+  padding: 16px 0 8px 0;
+  font-size: 13px;
+  line-height: 1.7;
+  font-weight: 300;
+  border-top: 1px dashed var(--green-dark);
+  margin-top: 12px;
+}
+
+.project-details-inner .tag {
+  display: inline-block;
+  font-size: 10px;
+  padding: 2px 8px;
+  border: 1px solid var(--green-dark);
+  color: var(--green-dim);
+  margin: 2px 4px 2px 0;
+  letter-spacing: 1px;
+}
+
+.project-link {
+  display: inline-block;
+  margin-top: 10px;
+  font-size: 12px;
+  color: var(--amber);
+  text-shadow: 0 0 5px rgba(255,176,0,0.3);
+  cursor: pointer;
+}
+
+.project-link:hover {
+  text-decoration: underline;
+}
+
+/* Glitch effect for project open */
+.glitch-flash {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,255,65,0.06);
+  z-index: 200;
+  pointer-events: none;
+  opacity: 0;
+}
+
+.glitch-flash.active {
+  animation: glitch-flash-anim 0.15s ease-out;
+}
+
+@keyframes glitch-flash-anim {
+  0% { opacity: 1; transform: translateX(-2px); }
+  25% { opacity: 0.7; transform: translateX(3px) skewX(-1deg); }
+  50% { opacity: 0.5; transform: translateX(-1px); }
+  100% { opacity: 0; transform: translateX(0); }
+}
+
+/* ========================
+   CONTACT SECTION
+   ======================== */
+.contact-prompt {
+  margin-top: 16px;
+}
+
+.contact-line {
+  font-size: 14px;
+  margin-bottom: 12px;
+  font-weight: 300;
+  line-height: 1.7;
+}
+
+.contact-input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  border: 1px solid var(--green-dark);
+  background: rgba(0,255,65,0.02);
+  margin-top: 20px;
+  transition: border-color 0.3s, box-shadow 0.3s;
+  max-width: 500px;
+}
+
+.contact-input-wrapper:hover,
+.contact-input-wrapper:focus-within {
+  border-color: var(--green);
+  box-shadow: 0 0 15px rgba(0,255,65,0.1), inset 0 0 15px rgba(0,255,65,0.03);
+}
+
+.contact-input-wrapper .prompt-symbol {
+  color: var(--amber);
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.contact-input {
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--green);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 14px;
+  width: 100%;
+  caret-color: var(--green);
+  text-shadow: 0 0 5px rgba(0,255,65,0.3);
+}
+
+.contact-links {
+  margin-top: 24px;
+  font-size: 13px;
+  line-height: 2;
+}
+
+.contact-links a {
+  color: var(--green-dim);
+  text-decoration: none;
+  text-shadow: 0 0 5px rgba(0,255,65,0.2);
+  transition: color 0.2s, text-shadow 0.2s;
+}
+
+.contact-links a:hover {
+  color: var(--green);
+  text-shadow: 0 0 10px var(--green);
+}
+
+.contact-links .link-prefix {
+  color: var(--green-dark);
+}
+
+/* ========================
+   FOOTER
+   ======================== */
+.footer {
+  margin-top: 80px;
+  padding: 24px 0;
+  border-top: 1px solid var(--green-dark);
+  font-size: 11px;
+  color: var(--green-dark);
+  text-align: center;
+  letter-spacing: 1px;
+}
+
+/* ========================
+   SOUND TOGGLE
+   ======================== */
+.sound-toggle {
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  z-index: 50;
+  font-size: 11px;
+  color: var(--green-dark);
+  cursor: pointer;
+  padding: 4px 8px;
+  user-select: none;
+  transition: color 0.2s;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.sound-toggle:hover {
+  color: var(--green);
+}
+
+.sound-toggle.active {
+  color: var(--amber);
+  text-shadow: 0 0 5px rgba(255,176,0,0.3);
+}
+
+/* ========================
+   EASTER EGG
+   ======================== */
+.easter-egg-overlay {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.92);
+  z-index: 80;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  padding: 40px;
+}
+
+.easter-egg-overlay.active {
+  display: flex;
+}
+
+.easter-egg-text {
+  font-size: 12px;
+  line-height: 1.3;
+  white-space: pre;
+  color: var(--amber);
+  text-shadow: 0 0 8px var(--amber);
+  text-align: center;
+}
+
+.easter-egg-dismiss {
+  margin-top: 24px;
+  font-size: 12px;
+  color: var(--green-dark);
+  cursor: pointer;
+}
+
+/* ========================
+   REDUCED MOTION
+   ======================== */
+@media (prefers-reduced-motion: reduce) {
+  .scanlines,
+  .scanline-bar,
+  .screen-flicker,
+  .noise {
+    animation: none !important;
+  }
+
+  .cursor-blink {
+    animation: none !important;
+    opacity: 1;
+  }
+
+  .boot-overlay {
+    display: none !important;
+  }
+
+  .boot-static {
+    display: none !important;
+  }
+
+  .screen-content {
+    opacity: 1 !important;
+  }
+
+  .hero-line,
+  .hero-ascii,
+  .about-text .typed-line {
+    opacity: 1 !important;
+  }
+
+  .section {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  @keyframes led-pulse {
+    0%, 100% { opacity: 1; }
+  }
+}
+
+/* ========================
+   RESPONSIVE
+   ======================== */
+@media (max-width: 768px) {
+  .monitor-outer {
+    width: 100vw;
+    height: 100vh;
+    max-width: none;
+    max-height: none;
+    border-radius: 0;
+    padding: 12px;
+  }
+
+  .monitor-screen {
+    border-radius: 4px;
+  }
+
+  .screen-content {
+    padding: 20px;
+  }
+
+  .hero-ascii {
+    font-size: 9px;
+  }
+
+  .nav-bar {
+    gap: 4px;
+  }
+
+  .stat-row {
+    gap: 16px;
+  }
+}
+</style>
+</head>
+<body>
+
+<div class="monitor-outer">
+  <span class="bezel-label">REDUX SYSTEMS</span>
+  <div class="bezel-led"></div>
+
+  <div class="monitor-screen" id="monitor">
+    <!-- CRT Effects -->
+    <div class="scanlines"></div>
+    <div class="scanline-bar"></div>
+    <div class="vignette"></div>
+    <div class="screen-flicker"></div>
+    <div class="crt-rgb"></div>
+    <div class="noise" id="noise"></div>
+
+    <!-- Boot Sequence -->
+    <div class="boot-overlay" id="bootOverlay">
+      <div class="boot-line" id="bootLine"></div>
+    </div>
+    <div class="boot-static" id="bootStatic">
+      <canvas id="staticCanvas"></canvas>
+    </div>
+
+    <!-- Sound Toggle -->
+    <div class="sound-toggle" id="soundToggle">[SND:OFF]</div>
+
+    <!-- Easter Egg -->
+    <div class="easter-egg-overlay" id="easterEgg">
+      <div class="easter-egg-text" id="easterEggText"></div>
+      <div class="easter-egg-dismiss" onclick="dismissEasterEgg()">[PRESS ANY KEY TO CONTINUE]</div>
+    </div>
+
+    <!-- Glitch Flash -->
+    <div class="glitch-flash" id="glitchFlash"></div>
+
+    <!-- Main Content -->
+    <div class="screen-content" id="screenContent">
+
+      <!-- HERO -->
+      <section class="hero" id="hero">
+        <div class="hero-line" id="heroLine1"></div>
+        <div class="hero-line" id="heroLine2"></div>
+        <div class="hero-line" id="heroLine3"></div>
+        <div class="hero-ascii glow" id="heroAscii"></div>
+        <div class="hero-line" id="heroLine4"></div>
+        <div class="hero-line" id="heroLine5"></div>
+      </section>
+
+      <!-- NAVIGATION -->
+      <nav class="nav-bar" id="navBar">
+        <span class="nav-cmd" data-target="about">about</span>
+        <span class="nav-separator">|</span>
+        <span class="nav-cmd" data-target="projects">projects</span>
+        <span class="nav-separator">|</span>
+        <span class="nav-cmd" data-target="contact">contact</span>
+        <span class="nav-separator">|</span>
+        <span class="nav-cmd" data-target="hero">home</span>
+      </nav>
+
+      <!-- ABOUT -->
+      <section class="section" id="about">
+        <div class="section-header glow">
+          <span class="bracket">[</span> ABOUT.TXT <span class="bracket">]</span>
+        </div>
+        <hr class="section-divider">
+        <div class="about-text" id="aboutText">
+          <span class="typed-line">$ cat about.txt</span>
+          <span class="typed-line">&nbsp;</span>
+          <span class="typed-line">I am a designer who builds at the intersection of</span>
+          <span class="typed-line">aesthetics and engineering. My work lives where pixels</span>
+          <span class="typed-line">become experiences and interfaces become conversations.</span>
+          <span class="typed-line">&nbsp;</span>
+          <span class="typed-line glow-amber">// SPECIALIZATIONS:</span>
+          <span class="typed-line">Brand Identity Systems / Digital Product Design /</span>
+          <span class="typed-line">Creative Direction / Interactive Installations /</span>
+          <span class="typed-line">Motion Design / Generative Art</span>
+          <span class="typed-line">&nbsp;</span>
+          <span class="typed-line dim">Formerly at: IDEO, R/GA, Pentagram</span>
+          <span class="typed-line dim">Current: Independent, accepting contracts.</span>
+        </div>
+        <div class="stat-row">
+          <div class="stat-item">
+            YEARS_ACTIVE
+            <span class="stat-val">12+</span>
+          </div>
+          <div class="stat-item">
+            PROJECTS_SHIPPED
+            <span class="stat-val">87</span>
+          </div>
+          <div class="stat-item">
+            AWARDS
+            <span class="stat-val">23</span>
+          </div>
+          <div class="stat-item">
+            CLIENTS_SERVED
+            <span class="stat-val">41</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- PROJECTS -->
+      <section class="section" id="projects">
+        <div class="section-header glow">
+          <span class="bracket">[</span> PROJECTS <span class="bracket">]</span>
+        </div>
+        <hr class="section-divider">
+        <div class="dim" style="font-size:12px;margin-bottom:16px;">C:\PORTFOLIO\PROJECTS> dir /w</div>
+        <div class="project-list" id="projectList">
+
+          <div class="project-item" data-project="1">
+            <div class="project-name"><span class="exe">project_001.exe</span> &mdash; NEON_DISTRICT Brand Identity</div>
+            <div class="project-meta">2024 | Brand Identity, Art Direction | 4.2MB</div>
+            <div class="project-details">
+              <div class="project-details-inner">
+                Complete brand identity system for a cyberpunk-themed nightclub chain. Included logo system, environmental design, print collateral, and a generative AI visual identity engine that creates unique assets per venue.
+                <br><br>
+                <span class="tag">BRANDING</span>
+                <span class="tag">ART DIRECTION</span>
+                <span class="tag">GENERATIVE</span>
+                <br>
+                <span class="project-link">> VIEW_CASE_STUDY.pdf</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="project-item" data-project="2">
+            <div class="project-name"><span class="exe">project_002.exe</span> &mdash; VOID_PROTOCOL App Design</div>
+            <div class="project-meta">2024 | Product Design, UX | 6.1MB</div>
+            <div class="project-details">
+              <div class="project-details-inner">
+                End-to-end product design for a privacy-first messaging platform. Dark-mode-native interface with encrypted data visualization, biometric flows, and a unique "disappearing UI" paradigm where chrome fades during reading.
+                <br><br>
+                <span class="tag">PRODUCT</span>
+                <span class="tag">UX</span>
+                <span class="tag">PRIVACY</span>
+                <br>
+                <span class="project-link">> LAUNCH_PROTOTYPE.app</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="project-item" data-project="3">
+            <div class="project-name"><span class="exe">project_003.exe</span> &mdash; MERIDIAN Festival Identity</div>
+            <div class="project-meta">2023 | Creative Direction | 3.8MB</div>
+            <div class="project-details">
+              <div class="project-details-inner">
+                Creative direction for an immersive arts festival. Designed a modular identity system where every piece of collateral uses real-time data (weather, sound levels, crowd density) to generate unique visual outputs.
+                <br><br>
+                <span class="tag">CREATIVE DIRECTION</span>
+                <span class="tag">GENERATIVE</span>
+                <span class="tag">INSTALLATION</span>
+                <br>
+                <span class="project-link">> PLAY_REEL.mov</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="project-item" data-project="4">
+            <div class="project-name"><span class="exe">project_004.exe</span> &mdash; SUBSTRATE Design System</div>
+            <div class="project-meta">2023 | Design Systems, Engineering | 12.4MB</div>
+            <div class="project-details">
+              <div class="project-details-inner">
+                Enterprise design system serving 200+ engineers across 6 product teams. Token-driven architecture, comprehensive component library, and a custom Figma plugin for real-time code generation. Reduced design-to-dev handoff time by 60%.
+                <br><br>
+                <span class="tag">DESIGN SYSTEMS</span>
+                <span class="tag">TOKENS</span>
+                <span class="tag">FIGMA</span>
+                <br>
+                <span class="project-link">> OPEN_DOCS.html</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="project-item" data-project="5">
+            <div class="project-name"><span class="exe">project_005.exe</span> &mdash; PHANTOM Data Visualization</div>
+            <div class="project-meta">2023 | Data Viz, WebGL | 8.7MB</div>
+            <div class="project-details">
+              <div class="project-details-inner">
+                Real-time data visualization platform for a climate research institute. WebGL-powered globe with live satellite data streams, custom shader effects, and an interactive timeline spanning 200 years of climate data.
+                <br><br>
+                <span class="tag">DATA VIZ</span>
+                <span class="tag">WEBGL</span>
+                <span class="tag">CLIMATE</span>
+                <br>
+                <span class="project-link">> RUN_DEMO.exe</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="project-item" data-project="6">
+            <div class="project-name"><span class="exe">project_006.exe</span> &mdash; ECHO Interactive Installation</div>
+            <div class="project-meta">2022 | Installation, Motion | 2.9MB</div>
+            <div class="project-details">
+              <div class="project-details-inner">
+                Museum installation that translates visitors' movements into generative typography. Kinect sensors capture body language, which is processed through a custom algorithm to produce unique letterforms projected in real-time on a 40-foot wall.
+                <br><br>
+                <span class="tag">INSTALLATION</span>
+                <span class="tag">MOTION</span>
+                <span class="tag">GENERATIVE</span>
+                <br>
+                <span class="project-link">> WATCH_RECORDING.mov</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- CONTACT -->
+      <section class="section" id="contact">
+        <div class="section-header glow">
+          <span class="bracket">[</span> CONTACT <span class="bracket">]</span>
+        </div>
+        <hr class="section-divider">
+        <div class="contact-prompt">
+          <div class="contact-line dim">// ESTABLISH CONNECTION</div>
+          <div class="contact-line">Ready to collaborate? Send a transmission.</div>
+          <div class="contact-line">Open for freelance, consulting, and creative partnerships.</div>
+
+          <div class="contact-input-wrapper">
+            <span class="prompt-symbol">>&nbsp;</span>
+            <input type="text" class="contact-input" id="contactInput" placeholder="type your message and press enter..." autocomplete="off" spellcheck="false">
+          </div>
+
+          <div class="contact-links">
+            <div><span class="link-prefix">LINK_01: </span><a href="#">hello@kai-redux.design</a></div>
+            <div><span class="link-prefix">LINK_02: </span><a href="#">twitter.com/kai_redux</a></div>
+            <div><span class="link-prefix">LINK_03: </span><a href="#">github.com/kai-redux</a></div>
+            <div><span class="link-prefix">LINK_04: </span><a href="#">dribbble.com/kai_redux</a></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- FOOTER -->
+      <div class="footer">
+        DESIGNER.SYS v2.0 &mdash; (C) 2024 KAI_REDUX &mdash; ALL RIGHTS RESERVED
+        <br>
+        <span class="dim">SYSTEM UPTIME: <span id="uptimeCounter">00:00:00</span> | MEM: 640K | SIGNAL: STRONG</span>
+      </div>
+
+    </div><!-- /screen-content -->
+  </div><!-- /monitor-screen -->
+</div><!-- /monitor-outer -->
+
+<script>
+// ============================================
+// STATE
+// ============================================
+let soundEnabled = false;
+let audioCtx = null;
+let bootComplete = false;
+let easterEggBuffer = '';
+const startTime = Date.now();
+
+// ============================================
+// NOISE CANVAS (for grain and boot static)
+// ============================================
+function generateNoiseDataURL(w, h) {
+  const canvas = document.createElement('canvas');
+  canvas.width = w;
+  canvas.height = h;
+  const ctx = canvas.getContext('2d');
+  const imageData = ctx.createImageData(w, h);
+  const data = imageData.data;
+  for (let i = 0; i < data.length; i += 4) {
+    const v = Math.random() * 255;
+    data[i] = data[i+1] = data[i+2] = v;
+    data[i+3] = 255;
+  }
+  ctx.putImageData(imageData, 0, 0);
+  return canvas.toDataURL();
+}
+
+// Set noise background
+const noiseEl = document.getElementById('noise');
+noiseEl.style.backgroundImage = `url(${generateNoiseDataURL(256, 256)})`;
+noiseEl.style.backgroundSize = '256px 256px';
+
+// ============================================
+// BOOT SEQUENCE
+// ============================================
+function runBootSequence() {
+  const overlay = document.getElementById('bootOverlay');
+  const bootLine = document.getElementById('bootLine');
+  const staticOverlay = document.getElementById('bootStatic');
+  const staticCanvas = document.getElementById('staticCanvas');
+  const screenContent = document.getElementById('screenContent');
+
+  // Check reduced motion
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    overlay.style.display = 'none';
+    staticOverlay.style.display = 'none';
+    screenContent.style.opacity = '1';
+    bootComplete = true;
+    startHeroTyping();
+    return;
+  }
+
+  // Phase 1: horizontal line appears
+  setTimeout(() => {
+    bootLine.style.transition = 'width 0.4s ease-out';
+    bootLine.style.width = '60%';
+  }, 300);
+
+  // Phase 2: line expands to full width
+  setTimeout(() => {
+    bootLine.style.transition = 'width 0.3s ease-out';
+    bootLine.style.width = '100%';
+  }, 800);
+
+  // Phase 3: line expands vertically with static
+  setTimeout(() => {
+    bootLine.style.transition = 'height 0.4s ease-out, width 0.1s';
+    bootLine.style.height = '100%';
+    bootLine.style.width = '100%';
+    bootLine.style.background = '#fff';
+  }, 1200);
+
+  // Phase 4: Show static
+  setTimeout(() => {
+    overlay.style.display = 'none';
+    staticOverlay.style.opacity = '1';
+    const sCtx = staticCanvas.getContext('2d');
+    staticCanvas.width = staticCanvas.offsetWidth;
+    staticCanvas.height = staticCanvas.offsetHeight;
+
+    let frames = 0;
+    const maxFrames = 18;
+    function drawStatic() {
+      const w = staticCanvas.width;
+      const h = staticCanvas.height;
+      const imageData = sCtx.createImageData(w, h);
+      const data = imageData.data;
+      for (let i = 0; i < data.length; i += 4) {
+        const v = Math.random() * 255;
+        data[i] = data[i+1] = data[i+2] = v;
+        data[i+3] = 255;
+      }
+      sCtx.putImageData(imageData, 0, 0);
+      frames++;
+      if (frames < maxFrames) {
+        requestAnimationFrame(drawStatic);
+      }
+    }
+    drawStatic();
+  }, 1650);
+
+  // Phase 5: Static fades, content appears
+  setTimeout(() => {
+    staticOverlay.style.transition = 'opacity 0.3s ease-out';
+    staticOverlay.style.opacity = '0';
+  }, 2200);
+
+  setTimeout(() => {
+    staticOverlay.style.display = 'none';
+    screenContent.style.transition = 'opacity 0.5s ease-in';
+    screenContent.style.opacity = '1';
+    bootComplete = true;
+    startHeroTyping();
+  }, 2500);
+}
+
+// ============================================
+// TYPING EFFECT
+// ============================================
+function typeText(element, text, speed, callback) {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    element.textContent = text;
+    element.classList.add('visible');
+    if (callback) callback();
+    return;
+  }
+
+  element.classList.add('visible');
+  let i = 0;
+  element.textContent = '';
+  const cursor = document.createElement('span');
+  cursor.className = 'cursor-blink';
+  element.appendChild(cursor);
+
+  function type() {
+    if (i < text.length) {
+      element.textContent = text.substring(0, i + 1);
+      element.appendChild(cursor);
+      i++;
+      playClickSound();
+      setTimeout(type, speed + Math.random() * speed * 0.5);
+    } else {
+      if (callback) callback();
+    }
+  }
+  type();
+}
+
+function revealBlock(element, callback) {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    element.textContent = element.getAttribute('data-text') || element.textContent;
+    element.classList.add('visible');
+    if (callback) callback();
+    return;
+  }
+  element.classList.add('visible');
+  if (callback) setTimeout(callback, 50);
+}
+
+// ============================================
+// HERO SEQUENCE
+// ============================================
+const asciiArt = `
+ _  __   _   ___   ____  _____ ____  _   ___  __
+| |/ /  / \\ |_ _| |  _ \\| ____|  _ \\| | | \\ \\/ /
+| ' /  / _ \\ | |  | |_) |  _| | | | | | | |\\  /
+| . \\ / ___ \\| |  |  _ <| |___| |_| | |_| |/  \\
+|_|\\_/_/   \\_|___| |_| \\_|_____|____/ \\___//_/\\_\\
+`.trim();
+
+function startHeroTyping() {
+  const line1 = document.getElementById('heroLine1');
+  const line2 = document.getElementById('heroLine2');
+  const line3 = document.getElementById('heroLine3');
+  const ascii = document.getElementById('heroAscii');
+  const line4 = document.getElementById('heroLine4');
+  const line5 = document.getElementById('heroLine5');
+
+  typeText(line1, 'C:\\> DESIGNER.SYS v2.0', 40, () => {
+    setTimeout(() => {
+      typeText(line2, 'Loading portfolio...', 35, () => {
+        setTimeout(() => {
+          typeText(line3, 'SYSTEM READY. WELCOME TO:', 30, () => {
+            setTimeout(() => {
+              ascii.textContent = asciiArt;
+              ascii.classList.add('visible');
+              playClickSound();
+              setTimeout(() => {
+                typeText(line4, '// Creative Technologist & Digital Designer', 25, () => {
+                  setTimeout(() => {
+                    line5.innerHTML = '<span class="dim">Type a command or scroll to navigate.</span><span class="cursor-blink"></span>';
+                    line5.classList.add('visible');
+                  }, 200);
+                });
+              }, 300);
+            }, 200);
+          });
+        }, 300);
+      });
+    }, 400);
+  });
+}
+
+// ============================================
+// WEB AUDIO — CLICK SOUNDS
+// ============================================
+function initAudio() {
+  if (!audioCtx) {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+}
+
+function playClickSound() {
+  if (!soundEnabled || !audioCtx) return;
+  try {
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.type = 'square';
+    osc.frequency.setValueAtTime(800 + Math.random() * 400, audioCtx.currentTime);
+    gain.gain.setValueAtTime(0.03, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.05);
+    osc.start(audioCtx.currentTime);
+    osc.stop(audioCtx.currentTime + 0.05);
+  } catch(e) {}
+}
+
+function playGlitchSound() {
+  if (!soundEnabled || !audioCtx) return;
+  try {
+    const bufferSize = audioCtx.sampleRate * 0.08;
+    const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) {
+      data[i] = (Math.random() * 2 - 1) * 0.06;
+    }
+    const source = audioCtx.createBufferSource();
+    source.buffer = buffer;
+    const gain = audioCtx.createGain();
+    source.connect(gain);
+    gain.connect(audioCtx.destination);
+    gain.gain.setValueAtTime(0.06, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.08);
+    source.start();
+  } catch(e) {}
+}
+
+// ============================================
+// SOUND TOGGLE
+// ============================================
+document.getElementById('soundToggle').addEventListener('click', function() {
+  initAudio();
+  soundEnabled = !soundEnabled;
+  this.textContent = soundEnabled ? '[SND:ON]' : '[SND:OFF]';
+  this.classList.toggle('active', soundEnabled);
+  if (soundEnabled) playClickSound();
+});
+
+// ============================================
+// NAVIGATION
+// ============================================
+document.querySelectorAll('.nav-cmd').forEach(cmd => {
+  cmd.addEventListener('click', function() {
+    const target = this.getAttribute('data-target');
+    const el = document.getElementById(target);
+    if (!el) return;
+
+    // Flash effect
+    this.classList.add('flash');
+    playGlitchSound();
+    setTimeout(() => this.classList.remove('flash'), 150);
+
+    // Scroll
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+});
+
+// ============================================
+// PROJECTS — EXPAND/COLLAPSE
+// ============================================
+const glitchFlash = document.getElementById('glitchFlash');
+
+document.querySelectorAll('.project-item').forEach(item => {
+  item.addEventListener('click', function() {
+    const wasActive = this.classList.contains('active');
+
+    // Close all
+    document.querySelectorAll('.project-item').forEach(p => p.classList.remove('active'));
+
+    if (!wasActive) {
+      this.classList.add('active');
+
+      // Glitch flash
+      glitchFlash.classList.remove('active');
+      void glitchFlash.offsetWidth;
+      glitchFlash.classList.add('active');
+      playGlitchSound();
+
+      setTimeout(() => glitchFlash.classList.remove('active'), 200);
+    } else {
+      playClickSound();
+    }
+  });
+});
+
+// ============================================
+// INTERSECTION OBSERVER — SCROLL REVEAL
+// ============================================
+const observerOptions = { threshold: 0.15, root: document.getElementById('screenContent') };
+
+const sectionObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('in-view');
+
+      // Trigger about typing
+      if (entry.target.id === 'about') {
+        triggerAboutTyping();
+      }
+    }
+  });
+}, observerOptions);
+
+document.querySelectorAll('.section').forEach(s => sectionObserver.observe(s));
+
+let aboutTyped = false;
+function triggerAboutTyping() {
+  if (aboutTyped) return;
+  aboutTyped = true;
+
+  const lines = document.querySelectorAll('#aboutText .typed-line');
+  lines.forEach((line, i) => {
+    setTimeout(() => {
+      line.classList.add('visible');
+    }, i * 120);
+  });
+}
+
+// ============================================
+// CONTACT INPUT
+// ============================================
+const contactInput = document.getElementById('contactInput');
+contactInput.addEventListener('keydown', function(e) {
+  if (e.key === 'Enter' && this.value.trim()) {
+    const val = this.value.trim();
+    this.value = '';
+    this.placeholder = `MESSAGE SENT: "${val}" // Transmission queued.`;
+    playGlitchSound();
+    setTimeout(() => {
+      this.placeholder = 'type your message and press enter...';
+    }, 3000);
+  }
+});
+
+// ============================================
+// EASTER EGG — TYPE "hello" ANYWHERE
+// ============================================
+const easterEggArt = `
+    ___  ___  ________  ___       ___       ________
+   |\\  \\|\\  \\|\\   __  \\|\\  \\     |\\  \\     |\\   __  \\
+   \\ \\  \\\\\\  \\ \\  \\|\\  \\ \\  \\    \\ \\  \\    \\ \\  \\|\\  \\
+    \\ \\   __  \\ \\   __  \\ \\  \\    \\ \\  \\    \\ \\  \\\\\\  \\
+     \\ \\  \\ \\  \\ \\  \\ \\  \\ \\  \\____\\ \\  \\____\\ \\  \\\\\\  \\
+      \\ \\__\\ \\__\\ \\__\\ \\__\\ \\_______\\ \\_______\\ \\_______\\
+       \\|__|\\|__|\\|__|\\|__|\\|_______|\\|_______|\\|_______|
+
+
+    > HELLO, HUMAN.
+    > YOU FOUND THE SECRET.
+    > THIS MACHINE REMEMBERS YOU.
+    > SESSION LOGGED. TRUST ESTABLISHED.
+    >
+    > "The best interfaces are the ones that
+    >  feel like they're alive."
+    >                    — KAI_REDUX, 2024
+`;
+
+document.addEventListener('keydown', function(e) {
+  if (document.activeElement === contactInput) return;
+  if (document.getElementById('easterEgg').classList.contains('active')) {
+    dismissEasterEgg();
+    return;
+  }
+
+  const key = e.key.toLowerCase();
+  if (key.length === 1 && /[a-z]/.test(key)) {
+    easterEggBuffer += key;
+    if (easterEggBuffer.length > 10) easterEggBuffer = easterEggBuffer.slice(-10);
+    if (easterEggBuffer.includes('hello')) {
+      easterEggBuffer = '';
+      showEasterEgg();
+    }
+  }
+});
+
+function showEasterEgg() {
+  const overlay = document.getElementById('easterEgg');
+  document.getElementById('easterEggText').textContent = easterEggArt;
+  overlay.classList.add('active');
+  playGlitchSound();
+}
+
+function dismissEasterEgg() {
+  document.getElementById('easterEgg').classList.remove('active');
+  playClickSound();
+}
+
+// ============================================
+// UPTIME COUNTER
+// ============================================
+function updateUptime() {
+  const elapsed = Math.floor((Date.now() - startTime) / 1000);
+  const h = String(Math.floor(elapsed / 3600)).padStart(2, '0');
+  const m = String(Math.floor((elapsed % 3600) / 60)).padStart(2, '0');
+  const s = String(elapsed % 60).padStart(2, '0');
+  const el = document.getElementById('uptimeCounter');
+  if (el) el.textContent = `${h}:${m}:${s}`;
+}
+setInterval(updateUptime, 1000);
+
+// ============================================
+// PERIODIC NOISE REFRESH (grain variation)
+// ============================================
+setInterval(() => {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  noiseEl.style.backgroundImage = `url(${generateNoiseDataURL(256, 256)})`;
+}, 200);
+
+// ============================================
+// INIT
+// ============================================
+window.addEventListener('DOMContentLoaded', () => {
+  runBootSequence();
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,30 @@
+{
+  "name": "web-designer-marketplace",
+  "description": "Award-winning web design skill for Claude Code",
+  "owner": {
+    "name": "Mickey Alton"
+  },
+  "plugins": [
+    {
+      "name": "web-designer",
+      "source": "./",
+      "description": "Transforms AI code generation into award-winning web design. 48 battle-tested patterns from the world's best-designed websites.",
+      "version": "1.0.0",
+      "author": {
+        "name": "Mickey Alton"
+      },
+      "homepage": "https://github.com/MickeyAlton33/web-designer-plugin",
+      "repository": "https://github.com/MickeyAlton33/web-designer-plugin",
+      "license": "MIT",
+      "keywords": [
+        "web-design",
+        "frontend",
+        "css",
+        "ui",
+        "animation",
+        "typography",
+        "creative"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WRECK -- Creative Agency</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    border-radius: 0 !important;
+  }
+
+  ::selection {
+    background: #BEFF00;
+    color: #000;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    font-family: 'Archivo Black', sans-serif;
+    background: #fff;
+    color: #000;
+    text-transform: uppercase;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  a {
+    color: #000;
+    text-decoration: none;
+  }
+
+  /* CUSTOM CURSOR */
+  .cursor-follower {
+    position: fixed;
+    width: 28px;
+    height: 28px;
+    background: #fff;
+    mix-blend-mode: difference;
+    pointer-events: none;
+    z-index: 100000;
+    transform: translate(-50%, -50%);
+    transition: width 0.15s, height 0.15s;
+  }
+
+  .cursor-follower.hovering {
+    width: 56px;
+    height: 56px;
+  }
+
+  /* CURSOR TRAIL */
+  .trail-dot {
+    position: fixed;
+    width: 6px;
+    height: 6px;
+    background: #000;
+    pointer-events: none;
+    z-index: 99999;
+    transform: translate(-50%, -50%);
+    opacity: 1;
+    transition: opacity 500ms linear;
+  }
+
+  .trail-dot.fade {
+    opacity: 0;
+  }
+
+  /* HEADER */
+  .header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    border-bottom: 3px solid #000;
+    background: #fff;
+  }
+
+  .header-logo {
+    font-size: 1.5rem;
+    letter-spacing: 0.2em;
+  }
+
+  .header-clock {
+    font-family: 'Courier New', monospace;
+    font-size: 1.2rem;
+    font-weight: 900;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .header-nav {
+    display: flex;
+    gap: 2rem;
+    font-size: 0.85rem;
+    letter-spacing: 0.15em;
+  }
+
+  .header-nav a {
+    position: relative;
+  }
+
+  .header-nav a::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 3px;
+    background: #BEFF00;
+    transition: width 0.3s;
+  }
+
+  .header-nav a:hover::after {
+    width: 100%;
+  }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 8rem 2rem 4rem;
+    border-bottom: 3px solid #000;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-title {
+    font-size: clamp(5rem, 15vw, 14rem);
+    letter-spacing: -0.06em;
+    line-height: 0.8;
+  }
+
+  .hero-subtitle {
+    font-size: clamp(1.2rem, 3vw, 2.5rem);
+    margin-top: 2rem;
+    letter-spacing: 0.05em;
+  }
+
+  .hero-overflow {
+    position: absolute;
+    right: -5vw;
+    bottom: 10vh;
+    font-size: clamp(8rem, 25vw, 22rem);
+    line-height: 0.75;
+    letter-spacing: -0.08em;
+    opacity: 0.06;
+    pointer-events: none;
+    white-space: nowrap;
+  }
+
+  /* MARQUEE */
+  .marquee-section {
+    border-bottom: 3px solid #000;
+    overflow: hidden;
+    white-space: nowrap;
+    padding: 1.5rem 0;
+  }
+
+  .marquee-track {
+    display: flex;
+    animation: marquee-scroll 20s linear infinite;
+    width: max-content;
+  }
+
+  .marquee-section:hover .marquee-track {
+    animation-play-state: paused;
+  }
+
+  .marquee-text {
+    font-size: clamp(2rem, 5vw, 5rem);
+    letter-spacing: 0.05em;
+    padding: 0 2rem;
+    flex-shrink: 0;
+  }
+
+  .marquee-text.outlined {
+    -webkit-text-stroke: 2px #000;
+    color: transparent;
+  }
+
+  @keyframes marquee-scroll {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+
+  /* SERVICES MARQUEE */
+  .services-marquee {
+    border-bottom: 3px solid #000;
+    overflow: hidden;
+    white-space: nowrap;
+    padding: 2rem 0;
+  }
+
+  .services-track {
+    display: flex;
+    animation: services-scroll 30s linear infinite;
+    width: max-content;
+  }
+
+  .services-text {
+    font-size: clamp(1rem, 2.5vw, 2rem);
+    letter-spacing: 0.2em;
+    padding: 0 1rem;
+    flex-shrink: 0;
+  }
+
+  .services-text .slash {
+    display: inline-block;
+    transition: color 0.2s;
+  }
+
+  .services-marquee:hover .slash {
+    color: #BEFF00;
+  }
+
+  @keyframes services-scroll {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+
+  /* ABOUT SECTION */
+  .about {
+    display: flex;
+    border-bottom: 3px solid #000;
+    min-height: 80vh;
+  }
+
+  .about-sidebar {
+    width: 80px;
+    border-right: 3px solid #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .about-sidebar-text {
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    transform: rotate(180deg);
+    font-size: 0.85rem;
+    letter-spacing: 0.3em;
+  }
+
+  .about-content {
+    display: flex;
+    flex: 1;
+  }
+
+  .about-left {
+    flex: 4;
+    padding: 4rem 3rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    border-right: 3px solid #000;
+  }
+
+  .about-right {
+    flex: 1;
+    padding: 4rem 2rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    letter-spacing: 0.15em;
+    line-height: 1.8;
+  }
+
+  .about-heading {
+    font-size: clamp(2.5rem, 6vw, 5rem);
+    letter-spacing: -0.04em;
+    line-height: 0.9;
+    margin-bottom: 2rem;
+  }
+
+  .about-text {
+    font-size: clamp(1rem, 2vw, 1.5rem);
+    line-height: 1.4;
+    letter-spacing: 0.02em;
+    max-width: 700px;
+  }
+
+  .about-year {
+    font-size: clamp(5rem, 10vw, 10rem);
+    line-height: 0.8;
+    letter-spacing: -0.06em;
+    opacity: 0.08;
+    margin-top: 3rem;
+  }
+
+  /* HORIZONTAL SCROLL PROJECTS */
+  .projects {
+    border-bottom: 3px solid #000;
+  }
+
+  .projects-header {
+    padding: 3rem 2rem 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    border-bottom: 3px solid #000;
+  }
+
+  .projects-title {
+    font-size: clamp(2rem, 5vw, 4rem);
+    letter-spacing: -0.04em;
+  }
+
+  .projects-count {
+    font-size: 0.85rem;
+    letter-spacing: 0.2em;
+  }
+
+  .projects-scroll {
+    display: flex;
+    gap: 3rem;
+    padding: 3rem;
+    overflow-x: auto;
+    cursor: grab;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .projects-scroll::-webkit-scrollbar {
+    display: none;
+  }
+
+  .projects-scroll.dragging {
+    cursor: grabbing;
+  }
+
+  .project-card {
+    flex-shrink: 0;
+    width: 380px;
+    border: 3px solid #000;
+    transition: border-color 0.2s;
+  }
+
+  .project-card:hover {
+    border-color: #BEFF00;
+  }
+
+  .project-thumb {
+    width: 100%;
+    height: 460px;
+  }
+
+  .project-info {
+    padding: 1.5rem;
+    border-top: 3px solid #000;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .project-card:hover .project-info {
+    border-top-color: #BEFF00;
+  }
+
+  .project-name {
+    font-size: 1rem;
+    letter-spacing: 0.1em;
+  }
+
+  .project-tag {
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    border: 2px solid #000;
+    padding: 0.3em 0.8em;
+    transition: background 0.2s, color 0.2s, border-color 0.2s;
+  }
+
+  .project-card:hover .project-tag {
+    background: #BEFF00;
+    border-color: #BEFF00;
+  }
+
+  /* BIG STATEMENT */
+  .statement {
+    border-bottom: 3px solid #000;
+    padding: 6rem 2rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .statement-text {
+    font-size: clamp(3rem, 10vw, 10rem);
+    line-height: 0.85;
+    letter-spacing: -0.05em;
+  }
+
+  .statement-text .small {
+    font-size: 0.35em;
+    letter-spacing: 0.15em;
+    display: block;
+    margin-top: 1.5rem;
+  }
+
+  /* CONTACT */
+  .contact {
+    border-bottom: 3px solid #000;
+    display: flex;
+    min-height: 60vh;
+  }
+
+  .contact-left {
+    flex: 1;
+    padding: 4rem 3rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    border-right: 3px solid #000;
+  }
+
+  .contact-right {
+    width: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .contact-right-text {
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    transform: rotate(180deg);
+    font-size: 0.75rem;
+    letter-spacing: 0.3em;
+  }
+
+  .contact-label {
+    font-size: 0.85rem;
+    letter-spacing: 0.3em;
+    margin-bottom: 1.5rem;
+  }
+
+  .contact-email {
+    font-size: clamp(2rem, 6vw, 5rem);
+    letter-spacing: -0.03em;
+    line-height: 1;
+    word-break: break-all;
+    transition: color 0.2s;
+  }
+
+  .contact-email:hover {
+    color: #BEFF00;
+  }
+
+  /* FOOTER */
+  .footer {
+    padding: 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+  }
+
+  /* TEXT SCRAMBLE */
+  [data-scramble] {
+    cursor: none;
+  }
+
+  /* REDUCED MOTION */
+  @media (prefers-reduced-motion: reduce) {
+    .marquee-track,
+    .services-track {
+      animation: none !important;
+    }
+
+    .trail-dot {
+      display: none !important;
+    }
+
+    .cursor-follower {
+      display: none !important;
+    }
+
+    body {
+      cursor: auto;
+    }
+
+    [data-scramble] {
+      cursor: auto;
+    }
+
+    .project-card {
+      transform: rotate(0deg) !important;
+    }
+  }
+
+  /* MOBILE */
+  @media (max-width: 768px) {
+    .header {
+      padding: 0.75rem 1rem;
+    }
+
+    .header-nav {
+      display: none;
+    }
+
+    .about {
+      flex-direction: column;
+    }
+
+    .about-sidebar {
+      width: 100%;
+      height: 50px;
+      border-right: none;
+      border-bottom: 3px solid #000;
+    }
+
+    .about-sidebar-text {
+      writing-mode: horizontal-tb;
+      transform: none;
+    }
+
+    .about-content {
+      flex-direction: column;
+    }
+
+    .about-left {
+      border-right: none;
+      border-bottom: 3px solid #000;
+      padding: 2rem 1.5rem;
+    }
+
+    .about-right {
+      padding: 2rem 1.5rem;
+    }
+
+    .contact {
+      flex-direction: column;
+    }
+
+    .contact-left {
+      border-right: none;
+      border-bottom: 3px solid #000;
+      padding: 2rem 1.5rem;
+    }
+
+    .contact-right {
+      width: 100%;
+      height: 60px;
+    }
+
+    .contact-right-text {
+      writing-mode: horizontal-tb;
+      transform: none;
+    }
+
+    .project-card {
+      width: 300px;
+    }
+
+    .project-thumb {
+      height: 360px;
+    }
+
+    .cursor-follower,
+    .trail-dot {
+      display: none !important;
+    }
+
+    body {
+      cursor: auto;
+    }
+  }
+</style>
+</head>
+<body>
+
+<!-- CURSOR -->
+<div class="cursor-follower" id="cursor"></div>
+
+<!-- HEADER -->
+<header class="header">
+  <div class="header-logo">WRECK</div>
+  <nav class="header-nav">
+    <a href="#work">WORK</a>
+    <a href="#about">ABOUT</a>
+    <a href="#contact">CONTACT</a>
+  </nav>
+  <div class="header-clock" id="clock">00:00:00</div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <h1 class="hero-title" data-scramble>WRECK</h1>
+  <p class="hero-subtitle" data-scramble>WE BREAK THINGS BEAUTIFULLY.</p>
+  <div class="hero-overflow" aria-hidden="true">WRECK</div>
+</section>
+
+<!-- NAME MARQUEE -->
+<div class="marquee-section" aria-hidden="true">
+  <div class="marquee-track">
+    <span class="marquee-text">WRECK</span>
+    <span class="marquee-text outlined">WRECK</span>
+    <span class="marquee-text">WRECK</span>
+    <span class="marquee-text outlined">WRECK</span>
+    <span class="marquee-text">WRECK</span>
+    <span class="marquee-text outlined">WRECK</span>
+    <span class="marquee-text">WRECK</span>
+    <span class="marquee-text outlined">WRECK</span>
+    <span class="marquee-text">WRECK</span>
+    <span class="marquee-text outlined">WRECK</span>
+    <span class="marquee-text">WRECK</span>
+    <span class="marquee-text outlined">WRECK</span>
+    <span class="marquee-text">WRECK</span>
+    <span class="marquee-text outlined">WRECK</span>
+    <span class="marquee-text">WRECK</span>
+    <span class="marquee-text outlined">WRECK</span>
+  </div>
+</div>
+
+<!-- SERVICES MARQUEE -->
+<div class="services-marquee">
+  <div class="services-track">
+    <span class="services-text">BRANDING <span class="slash">/</span> WEBSITES <span class="slash">/</span> CAMPAIGNS <span class="slash">/</span> STRATEGY <span class="slash">/</span> CHAOS</span>
+    <span class="services-text">BRANDING <span class="slash">/</span> WEBSITES <span class="slash">/</span> CAMPAIGNS <span class="slash">/</span> STRATEGY <span class="slash">/</span> CHAOS</span>
+    <span class="services-text">BRANDING <span class="slash">/</span> WEBSITES <span class="slash">/</span> CAMPAIGNS <span class="slash">/</span> STRATEGY <span class="slash">/</span> CHAOS</span>
+    <span class="services-text">BRANDING <span class="slash">/</span> WEBSITES <span class="slash">/</span> CAMPAIGNS <span class="slash">/</span> STRATEGY <span class="slash">/</span> CHAOS</span>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<section class="about" id="about">
+  <div class="about-sidebar">
+    <span class="about-sidebar-text">ABOUT THE WRECK</span>
+  </div>
+  <div class="about-content">
+    <div class="about-left">
+      <h2 class="about-heading" data-scramble>FOUNDED IN FRUSTRATION.</h2>
+      <p class="about-text">FUELED BY CAFFEINE. WE DON'T DO PRETTY. WE DO WORK THAT PUNCHES YOU IN THE FACE AND MAKES YOU THINK ABOUT IT LATER. EVERY PIXEL IS A DELIBERATE ACT OF REBELLION AGAINST THE BEIGE MEDIOCRITY OF THE DESIGN INDUSTRY.</p>
+      <div class="about-year" aria-hidden="true">2019</div>
+    </div>
+    <div class="about-right">
+      <div>
+        <p>12 PEOPLE</p>
+        <p>3 CITIES</p>
+        <p>0 DRESS CODES</p>
+        <p>147 EMPTY COFFEE CUPS</p>
+      </div>
+      <div>
+        <p>BERLIN</p>
+        <p>BROOKLYN</p>
+        <p>BANGKOK</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section class="projects" id="work">
+  <div class="projects-header">
+    <h2 class="projects-title" data-scramble>SELECTED WORK</h2>
+    <span class="projects-count">(06)</span>
+  </div>
+  <div class="projects-scroll" id="projectsScroll">
+    <div class="project-card">
+      <div class="project-thumb" style="background: linear-gradient(135deg, #000 0%, #333 50%, #000 100%);"></div>
+      <div class="project-info">
+        <span class="project-name">VOID APPAREL</span>
+        <span class="project-tag">BRANDING</span>
+      </div>
+    </div>
+    <div class="project-card">
+      <div class="project-thumb" style="background: linear-gradient(225deg, #000 0%, #555 30%, #111 100%);"></div>
+      <div class="project-info">
+        <span class="project-name">NØISE FESTIVAL</span>
+        <span class="project-tag">CAMPAIGN</span>
+      </div>
+    </div>
+    <div class="project-card">
+      <div class="project-thumb" style="background: linear-gradient(45deg, #222 0%, #000 40%, #444 100%);"></div>
+      <div class="project-info">
+        <span class="project-name">CONCRETE MAG</span>
+        <span class="project-tag">WEBSITE</span>
+      </div>
+    </div>
+    <div class="project-card">
+      <div class="project-thumb" style="background: linear-gradient(180deg, #111 0%, #000 60%, #333 100%);"></div>
+      <div class="project-info">
+        <span class="project-name">RAW RECORDS</span>
+        <span class="project-tag">BRANDING</span>
+      </div>
+    </div>
+    <div class="project-card">
+      <div class="project-thumb" style="background: linear-gradient(315deg, #000 0%, #222 50%, #000 100%);"></div>
+      <div class="project-info">
+        <span class="project-name">STATIC STUDIO</span>
+        <span class="project-tag">STRATEGY</span>
+      </div>
+    </div>
+    <div class="project-card">
+      <div class="project-thumb" style="background: linear-gradient(90deg, #333 0%, #000 50%, #222 100%);"></div>
+      <div class="project-info">
+        <span class="project-name">FRACTURE CO.</span>
+        <span class="project-tag">CHAOS</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STATEMENT -->
+<section class="statement">
+  <div class="statement-text" data-scramble>
+    DESIGN IS<br>NOT DECORATION.
+    <span class="small">IT'S A WEAPON. USE IT.</span>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="contact" id="contact">
+  <div class="contact-left">
+    <div class="contact-label">GET IN TOUCH</div>
+    <a href="mailto:destroy@wreck.studio" class="contact-email" data-scramble>DESTROY@WRECK.STUDIO</a>
+  </div>
+  <div class="contact-right">
+    <span class="contact-right-text">ACCEPTING NEW CLIENTS -- MAYBE</span>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <span>&copy; WRECK 2026</span>
+  <span>NO COOKIES. NO TRACKING. NO NONSENSE.</span>
+</footer>
+
+<script>
+  // =========================================
+  // CLOCK
+  // =========================================
+  const clockEl = document.getElementById('clock');
+  function updateClock() {
+    const now = new Date();
+    const h = String(now.getHours()).padStart(2, '0');
+    const m = String(now.getMinutes()).padStart(2, '0');
+    const s = String(now.getSeconds()).padStart(2, '0');
+    clockEl.textContent = h + ':' + m + ':' + s;
+  }
+  updateClock();
+  setInterval(updateClock, 1000);
+
+  // =========================================
+  // REDUCED MOTION CHECK
+  // =========================================
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // =========================================
+  // CURSOR FOLLOWER + TRAIL
+  // =========================================
+  const cursor = document.getElementById('cursor');
+  let mouseX = 0, mouseY = 0;
+
+  if (!prefersReducedMotion && window.innerWidth > 768) {
+    document.addEventListener('mousemove', (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+      cursor.style.left = mouseX + 'px';
+      cursor.style.top = mouseY + 'px';
+
+      // Trail
+      const dot = document.createElement('div');
+      dot.className = 'trail-dot';
+      dot.style.left = mouseX + 'px';
+      dot.style.top = mouseY + 'px';
+      document.body.appendChild(dot);
+      requestAnimationFrame(() => dot.classList.add('fade'));
+      setTimeout(() => dot.remove(), 520);
+    });
+
+    // Hover state for interactive elements
+    const hoverTargets = document.querySelectorAll('a, button, [data-scramble], .project-card');
+    hoverTargets.forEach(el => {
+      el.addEventListener('mouseenter', () => cursor.classList.add('hovering'));
+      el.addEventListener('mouseleave', () => cursor.classList.remove('hovering'));
+    });
+  }
+
+  // =========================================
+  // TEXT SCRAMBLE ON HOVER
+  // =========================================
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&!?';
+
+  function scrambleText(element) {
+    const original = element.getAttribute('data-original') || element.textContent;
+    if (!element.getAttribute('data-original')) {
+      element.setAttribute('data-original', original);
+    }
+
+    // Preserve HTML structure for elements with child nodes
+    if (element.children.length > 0) return;
+
+    let iteration = 0;
+    const totalFrames = 15;
+
+    clearInterval(element._scrambleInterval);
+    element._scrambleInterval = setInterval(() => {
+      element.textContent = original
+        .split('')
+        .map((char, index) => {
+          if (char === ' ' || char === '\n') return char;
+          if (index < iteration) return original[index];
+          return chars[Math.floor(Math.random() * chars.length)];
+        })
+        .join('');
+
+      iteration += original.length / totalFrames;
+      if (iteration >= original.length) {
+        element.textContent = original;
+        clearInterval(element._scrambleInterval);
+      }
+    }, 35);
+  }
+
+  if (!prefersReducedMotion) {
+    document.querySelectorAll('[data-scramble]').forEach(el => {
+      el.addEventListener('mouseenter', () => scrambleText(el));
+    });
+  }
+
+  // =========================================
+  // HORIZONTAL DRAG SCROLL
+  // =========================================
+  const scrollContainer = document.getElementById('projectsScroll');
+  let isDown = false;
+  let startX;
+  let scrollLeft;
+
+  scrollContainer.addEventListener('mousedown', (e) => {
+    isDown = true;
+    scrollContainer.classList.add('dragging');
+    startX = e.pageX - scrollContainer.offsetLeft;
+    scrollLeft = scrollContainer.scrollLeft;
+  });
+
+  scrollContainer.addEventListener('mouseleave', () => {
+    isDown = false;
+    scrollContainer.classList.remove('dragging');
+  });
+
+  scrollContainer.addEventListener('mouseup', () => {
+    isDown = false;
+    scrollContainer.classList.remove('dragging');
+  });
+
+  scrollContainer.addEventListener('mousemove', (e) => {
+    if (!isDown) return;
+    e.preventDefault();
+    const x = e.pageX - scrollContainer.offsetLeft;
+    const walk = (x - startX) * 2;
+    scrollContainer.scrollLeft = scrollLeft - walk;
+  });
+
+  // =========================================
+  // RANDOM ROTATION ON PROJECT CARDS
+  // =========================================
+  document.querySelectorAll('.project-card').forEach(card => {
+    const rotation = (Math.random() * 10 - 5).toFixed(2);
+    card.style.transform = 'rotate(' + rotation + 'deg)';
+  });
+</script>
+</body>
+</html>

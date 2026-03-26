@@ -1,0 +1,26 @@
+name: Bug Report
+description: Report a problem with the web-designer plugin
+labels: ["bug"]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+      description: Describe the bug and what you expected instead.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+      description: What did you ask Claude to build?
+    validations:
+      required: true
+  - type: input
+    id: platform
+    attributes:
+      label: Platform
+      description: Claude Code, Cursor, Copilot, etc.
+      placeholder: "Claude Code v2.1"
+    validations:
+      required: true

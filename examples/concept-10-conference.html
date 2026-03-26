@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GLITCH CONF 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  /* ── Reset & Base ── */
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Space Grotesk', sans-serif;
+    overflow-x: hidden;
+    background: #0a0a0a;
+    color: #fff;
+    cursor: default;
+  }
+
+  /* ── SVG Filters (hidden) ── */
+  .svg-filters { position: absolute; width: 0; height: 0; overflow: hidden; }
+
+  /* ── Confetti Rain ── */
+  .confetti-container {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 9999;
+    overflow: hidden;
+  }
+  .confetti {
+    position: absolute;
+    top: -20px;
+    animation: confettiFall linear infinite;
+    opacity: 0.85;
+  }
+  .confetti--square { border-radius: 2px; }
+  .confetti--circle { border-radius: 50%; }
+
+  @keyframes confettiFall {
+    0%   { transform: translateY(-10vh) rotate(0deg); opacity: 0.9; }
+    100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+  }
+
+  /* Generate 24 confetti particles with varied positions, sizes, colors, speeds */
+  .confetti:nth-child(1)  { left: 3%;  width: 8px;  height: 8px;  background: #ec4899; animation-duration: 4.2s; animation-delay: 0s; }
+  .confetti:nth-child(2)  { left: 8%;  width: 6px;  height: 6px;  background: #facc15; animation-duration: 5.8s; animation-delay: 0.3s; }
+  .confetti:nth-child(3)  { left: 14%; width: 10px; height: 10px; background: #06b6d4; animation-duration: 3.9s; animation-delay: 0.7s; }
+  .confetti:nth-child(4)  { left: 19%; width: 7px;  height: 7px;  background: #4338ca; animation-duration: 6.1s; animation-delay: 1.2s; }
+  .confetti:nth-child(5)  { left: 25%; width: 5px;  height: 5px;  background: #ec4899; animation-duration: 4.7s; animation-delay: 0.1s; }
+  .confetti:nth-child(6)  { left: 30%; width: 9px;  height: 9px;  background: #facc15; animation-duration: 5.3s; animation-delay: 2.0s; }
+  .confetti:nth-child(7)  { left: 35%; width: 6px;  height: 6px;  background: #06b6d4; animation-duration: 4.0s; animation-delay: 0.5s; }
+  .confetti:nth-child(8)  { left: 40%; width: 11px; height: 11px; background: #ec4899; animation-duration: 6.5s; animation-delay: 1.5s; }
+  .confetti:nth-child(9)  { left: 45%; width: 7px;  height: 7px;  background: #4338ca; animation-duration: 3.6s; animation-delay: 0.8s; }
+  .confetti:nth-child(10) { left: 50%; width: 8px;  height: 8px;  background: #facc15; animation-duration: 5.1s; animation-delay: 0.2s; }
+  .confetti:nth-child(11) { left: 55%; width: 5px;  height: 5px;  background: #06b6d4; animation-duration: 4.4s; animation-delay: 1.8s; }
+  .confetti:nth-child(12) { left: 60%; width: 9px;  height: 9px;  background: #ec4899; animation-duration: 5.6s; animation-delay: 0.4s; }
+  .confetti:nth-child(13) { left: 64%; width: 6px;  height: 6px;  background: #4338ca; animation-duration: 3.8s; animation-delay: 2.3s; }
+  .confetti:nth-child(14) { left: 69%; width: 10px; height: 10px; background: #facc15; animation-duration: 4.9s; animation-delay: 0.6s; }
+  .confetti:nth-child(15) { left: 73%; width: 7px;  height: 7px;  background: #06b6d4; animation-duration: 6.3s; animation-delay: 1.1s; }
+  .confetti:nth-child(16) { left: 78%; width: 8px;  height: 8px;  background: #ec4899; animation-duration: 4.1s; animation-delay: 0.9s; }
+  .confetti:nth-child(17) { left: 82%; width: 5px;  height: 5px;  background: #facc15; animation-duration: 5.5s; animation-delay: 1.7s; }
+  .confetti:nth-child(18) { left: 86%; width: 11px; height: 11px; background: #4338ca; animation-duration: 3.7s; animation-delay: 0.0s; }
+  .confetti:nth-child(19) { left: 90%; width: 6px;  height: 6px;  background: #06b6d4; animation-duration: 6.0s; animation-delay: 2.1s; }
+  .confetti:nth-child(20) { left: 94%; width: 9px;  height: 9px;  background: #ec4899; animation-duration: 4.5s; animation-delay: 0.3s; }
+  .confetti:nth-child(21) { left: 11%; width: 7px;  height: 7px;  background: #facc15; animation-duration: 5.0s; animation-delay: 1.4s; }
+  .confetti:nth-child(22) { left: 47%; width: 8px;  height: 8px;  background: #4338ca; animation-duration: 4.3s; animation-delay: 0.7s; }
+  .confetti:nth-child(23) { left: 72%; width: 6px;  height: 6px;  background: #06b6d4; animation-duration: 5.9s; animation-delay: 1.9s; }
+  .confetti:nth-child(24) { left: 97%; width: 10px; height: 10px; background: #ec4899; animation-duration: 3.5s; animation-delay: 0.1s; }
+
+  /* ── Sections ── */
+  section { position: relative; padding: 6rem 2rem; overflow: hidden; }
+
+  .section--hero {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #4338ca 0%, #6d28d9 50%, #ec4899 100%);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding-top: 8rem;
+  }
+
+  .section--speakers {
+    background: linear-gradient(160deg, #ec4899 0%, #be185d 100%);
+    padding: 8rem 2rem;
+  }
+
+  .section--schedule {
+    background: linear-gradient(160deg, #facc15 0%, #eab308 100%);
+    color: #000;
+    padding: 8rem 2rem;
+  }
+
+  .section--sponsors {
+    background: linear-gradient(160deg, #06b6d4 0%, #0891b2 100%);
+    padding: 6rem 2rem;
+  }
+
+  .section--cta {
+    background: linear-gradient(135deg, #4338ca 0%, #ec4899 50%, #facc15 100%);
+    min-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 8rem 2rem;
+  }
+
+  /* ── Nav ── */
+  .nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    padding: 1.2rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(10,10,10,0.7);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+  .nav__logo {
+    font-weight: 700;
+    font-size: 1.2rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .nav__links { display: flex; gap: 2rem; list-style: none; }
+  .nav__links a {
+    color: #fff;
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    transition: opacity 0.2s;
+  }
+  .nav__links a:hover { opacity: 0.7; }
+
+  /* ── Hero ── */
+  .hero__title {
+    font-size: clamp(4rem, 14vw, 12rem);
+    font-weight: 700;
+    letter-spacing: -0.05em;
+    line-height: 0.85;
+    position: relative;
+    z-index: 2;
+  }
+  .hero__title-outline {
+    -webkit-text-stroke: 2px #fff;
+    color: transparent;
+  }
+  .hero__tagline {
+    font-size: clamp(1.2rem, 2.5vw, 2rem);
+    margin-top: 2rem;
+    font-weight: 300;
+    letter-spacing: 0.02em;
+    position: relative;
+    z-index: 2;
+    min-height: 2.5em;
+  }
+  .hero__tagline .cursor {
+    display: inline-block;
+    width: 3px;
+    height: 1em;
+    background: #facc15;
+    margin-left: 4px;
+    vertical-align: text-bottom;
+    animation: blink 0.7s step-end infinite;
+  }
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+
+  .hero__date {
+    margin-top: 1.5rem;
+    font-size: clamp(1rem, 2vw, 1.4rem);
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    transform: rotate(-5deg);
+    background: #facc15;
+    color: #000;
+    display: inline-block;
+    padding: 0.5rem 2rem;
+    position: relative;
+    z-index: 2;
+  }
+
+  /* ── 3D Cube ── */
+  .cube-container {
+    perspective: 600px;
+    width: 140px;
+    height: 140px;
+    margin: 3rem auto 0;
+    position: relative;
+    z-index: 2;
+  }
+  .cube {
+    width: 140px;
+    height: 140px;
+    position: relative;
+    transform-style: preserve-3d;
+    animation: cubeRotate 12s linear infinite;
+  }
+  @keyframes cubeRotate {
+    0%   { transform: rotateX(0deg) rotateY(0deg); }
+    100% { transform: rotateX(360deg) rotateY(360deg); }
+  }
+  .cube__face {
+    position: absolute;
+    width: 140px;
+    height: 140px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1rem;
+    letter-spacing: 0.05em;
+    border: 2px solid rgba(255,255,255,0.4);
+    background: rgba(255,255,255,0.1);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+  }
+  .cube__face span { font-size: 0.7rem; font-weight: 400; opacity: 0.8; margin-top: 4px; }
+  .cube__face--front  { transform: translateZ(70px); }
+  .cube__face--back   { transform: rotateY(180deg) translateZ(70px); }
+  .cube__face--right  { transform: rotateY(90deg) translateZ(70px); }
+  .cube__face--left   { transform: rotateY(-90deg) translateZ(70px); }
+  .cube__face--top    { transform: rotateX(90deg) translateZ(70px); }
+  .cube__face--bottom { transform: rotateX(-90deg) translateZ(70px); }
+
+  /* ── Countdown ── */
+  .countdown {
+    display: flex;
+    gap: 1.5rem;
+    justify-content: center;
+    margin-top: 3rem;
+    position: relative;
+    z-index: 2;
+  }
+  .countdown__block {
+    text-align: center;
+  }
+  .countdown__number {
+    font-size: clamp(2.5rem, 5vw, 4.5rem);
+    font-weight: 700;
+    line-height: 1;
+    background: rgba(0,0,0,0.2);
+    padding: 0.3em 0.5em;
+    border-radius: 12px;
+    display: block;
+    letter-spacing: 0.02em;
+  }
+  .countdown__label {
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-top: 0.5rem;
+    opacity: 0.8;
+    display: block;
+  }
+  .countdown__sep {
+    font-size: clamp(2.5rem, 5vw, 4.5rem);
+    font-weight: 300;
+    line-height: 1;
+    align-self: flex-start;
+    padding-top: 0.3em;
+    opacity: 0.5;
+  }
+
+  /* ── Section Headers ── */
+  .section-header {
+    font-size: clamp(2.5rem, 8vw, 6rem);
+    font-weight: 700;
+    letter-spacing: -0.04em;
+    line-height: 0.9;
+    margin-bottom: 4rem;
+  }
+  .section-header--rotated {
+    transform: rotate(-5deg);
+    transform-origin: left;
+  }
+
+  /* ── Speaker Cards ── */
+  .speakers-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .speaker-card {
+    background: rgba(0,0,0,0.2);
+    border-radius: 20px;
+    padding: 2.5rem 2rem;
+    text-align: center;
+    transform-style: preserve-3d;
+    transition: transform 0.1s ease-out, box-shadow 0.3s;
+    cursor: default;
+    will-change: transform;
+  }
+  .speaker-card:hover {
+    box-shadow: 0 30px 60px rgba(0,0,0,0.3);
+  }
+  .speaker-card__avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    margin: 0 auto 1.5rem;
+    transition: filter 0.4s ease;
+    overflow: hidden;
+  }
+  .speaker-card:hover .speaker-card__avatar {
+    filter: url(#wobble);
+  }
+  .speaker-card__avatar--1 { background: linear-gradient(135deg, #ec4899, #facc15); }
+  .speaker-card__avatar--2 { background: linear-gradient(135deg, #06b6d4, #4338ca); }
+  .speaker-card__avatar--3 { background: linear-gradient(135deg, #facc15, #ec4899); }
+  .speaker-card__avatar--4 { background: linear-gradient(135deg, #4338ca, #06b6d4); }
+  .speaker-card__avatar--5 { background: linear-gradient(135deg, #ec4899, #06b6d4); }
+  .speaker-card__avatar--6 { background: linear-gradient(135deg, #facc15, #4338ca); }
+
+  .speaker-card__name {
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-bottom: 0.3rem;
+  }
+  .speaker-card__role {
+    font-size: 0.85rem;
+    opacity: 0.75;
+    font-weight: 400;
+  }
+
+  /* ── Schedule ── */
+  .schedule-wrapper {
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  .schedule-day {
+    margin-bottom: 3rem;
+  }
+  .schedule-day__title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: #000;
+  }
+  .schedule-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+    color: #000;
+  }
+  .schedule-table th {
+    background: #000;
+    color: #fff;
+    padding: 0.8rem 1.2rem;
+    text-align: left;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .schedule-table td {
+    padding: 1rem 1.2rem;
+    border-bottom: 1px solid #eee;
+    font-size: 0.95rem;
+  }
+  .schedule-table tr:last-child td { border-bottom: none; }
+  .schedule-table .talk-title { font-weight: 600; }
+  .schedule-table .talk-speaker { color: #666; font-size: 0.85rem; }
+
+  /* ── Sponsors Marquee ── */
+  .marquee-wrapper {
+    position: relative;
+    overflow: hidden;
+    mask-image: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%);
+  }
+  .marquee {
+    display: flex;
+    gap: 4rem;
+    animation: marqueeScroll 20s linear infinite;
+    width: max-content;
+  }
+  @keyframes marqueeScroll {
+    0%   { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+  .marquee__item {
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    opacity: 0.7;
+    flex-shrink: 0;
+  }
+
+  /* ── Magnetic Button ── */
+  .btn-magnetic {
+    display: inline-block;
+    padding: 1.2rem 3rem;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: #000;
+    background: #facc15;
+    border: none;
+    border-radius: 60px;
+    cursor: pointer;
+    transition: transform 0.15s ease-out, box-shadow 0.3s;
+    position: relative;
+    z-index: 2;
+  }
+  .btn-magnetic:hover {
+    box-shadow: 0 10px 40px rgba(250,204,21,0.4);
+  }
+
+  /* ── Giant CTA ── */
+  .cta__title {
+    font-size: clamp(3rem, 10vw, 10rem);
+    font-weight: 700;
+    letter-spacing: -0.04em;
+    line-height: 0.9;
+    margin-bottom: 2rem;
+  }
+  .cta__title-outline {
+    -webkit-text-stroke: 3px #fff;
+    color: transparent;
+  }
+
+  /* ── Wiggle Button ── */
+  .btn-wiggle:hover {
+    animation: wiggle 0.3s ease-in-out infinite;
+  }
+  @keyframes wiggle {
+    0%, 100% { transform: rotate(-3deg); }
+    50%      { transform: rotate(3deg); }
+  }
+
+  /* ── Rotated accent text ── */
+  .rotated-text {
+    transform: rotate(-5deg);
+    display: inline-block;
+  }
+
+  /* ── Overlapping decorative elements ── */
+  .deco-circle {
+    position: absolute;
+    border-radius: 50%;
+    opacity: 0.15;
+    pointer-events: none;
+  }
+  .deco-circle--1 {
+    width: 400px; height: 400px;
+    background: #facc15;
+    top: -100px; right: -100px;
+  }
+  .deco-circle--2 {
+    width: 300px; height: 300px;
+    background: #06b6d4;
+    bottom: -50px; left: -80px;
+  }
+  .deco-circle--3 {
+    width: 500px; height: 500px;
+    background: #ec4899;
+    top: 50%; right: -200px;
+    transform: translateY(-50%);
+  }
+
+  .deco-text {
+    position: absolute;
+    font-size: clamp(4rem, 12vw, 10rem);
+    font-weight: 700;
+    opacity: 0.06;
+    letter-spacing: -0.04em;
+    pointer-events: none;
+    white-space: nowrap;
+  }
+  .deco-text--1 { top: 10%; left: -5%; transform: rotate(-12deg); }
+  .deco-text--2 { bottom: 5%; right: -5%; transform: rotate(8deg); }
+
+  /* ── Overlapping asymmetric block ── */
+  .overlap-block {
+    position: absolute;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 20px;
+    pointer-events: none;
+  }
+  .overlap-block--1 { width: 250px; height: 250px; top: 15%; right: 5%; transform: rotate(12deg); }
+  .overlap-block--2 { width: 180px; height: 180px; bottom: 10%; left: 8%; transform: rotate(-8deg); }
+
+  /* ── prefers-reduced-motion ── */
+  @media (prefers-reduced-motion: reduce) {
+    .confetti,
+    .cube,
+    .marquee,
+    .btn-wiggle:hover,
+    .hero__tagline .cursor {
+      animation: none !important;
+    }
+    .confetti-container { display: none; }
+    .cube { transform: rotateX(-20deg) rotateY(30deg); }
+    .marquee { transform: none; }
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 768px) {
+    .nav__links { display: none; }
+    .speakers-grid { grid-template-columns: 1fr; max-width: 340px; }
+    .countdown { gap: 0.8rem; }
+    .countdown__number { font-size: 2rem; padding: 0.3em 0.35em; }
+    section { padding: 4rem 1.2rem; }
+    .cube-container { width: 100px; height: 100px; }
+    .cube, .cube__face { width: 100px; height: 100px; }
+    .cube__face--front  { transform: translateZ(50px); }
+    .cube__face--back   { transform: rotateY(180deg) translateZ(50px); }
+    .cube__face--right  { transform: rotateY(90deg) translateZ(50px); }
+    .cube__face--left   { transform: rotateY(-90deg) translateZ(50px); }
+    .cube__face--top    { transform: rotateX(90deg) translateZ(50px); }
+    .cube__face--bottom { transform: rotateX(-90deg) translateZ(50px); }
+  }
+</style>
+</head>
+<body>
+
+<!-- SVG Filters -->
+<svg class="svg-filters">
+  <defs>
+    <filter id="wobble">
+      <feTurbulence type="turbulence" baseFrequency="0.04" numOctaves="3" result="turbulence" seed="2">
+        <animate attributeName="baseFrequency" values="0.01;0.06;0.01" dur="0.8s" repeatCount="indefinite"/>
+      </feTurbulence>
+      <feDisplacementMap in="SourceGraphic" in2="turbulence" scale="18" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+  </defs>
+</svg>
+
+<!-- Confetti -->
+<div class="confetti-container" aria-hidden="true">
+  <div class="confetti confetti--square"></div>
+  <div class="confetti confetti--circle"></div>
+  <div class="confetti confetti--square"></div>
+  <div class="confetti confetti--circle"></div>
+  <div class="confetti confetti--square"></div>
+  <div class="confetti confetti--circle"></div>
+  <div class="confetti confetti--square"></div>
+  <div class="confetti confetti--circle"></div>
+  <div class="confetti confetti--square"></div>
+  <div class="confetti confetti--circle"></div>
+  <div class="confetti confetti--square"></div>
+  <div class="confetti confetti--circle"></div>
+  <div class="confetti confetti--square"></div>
+  <div class="confetti confetti--circle"></div>
+  <div class="confetti confetti--square"></div>
+  <div class="confetti confetti--circle"></div>
+  <div class="confetti confetti--square"></div>
+  <div class="confetti confetti--circle"></div>
+  <div class="confetti confetti--square"></div>
+  <div class="confetti confetti--circle"></div>
+  <div class="confetti confetti--square"></div>
+  <div class="confetti confetti--circle"></div>
+  <div class="confetti confetti--square"></div>
+  <div class="confetti confetti--circle"></div>
+</div>
+
+<!-- Nav -->
+<nav class="nav">
+  <div class="nav__logo">Glitch Conf</div>
+  <ul class="nav__links">
+    <li><a href="#speakers">Speakers</a></li>
+    <li><a href="#schedule">Schedule</a></li>
+    <li><a href="#sponsors">Sponsors</a></li>
+    <li><a href="#tickets">Tickets</a></li>
+  </ul>
+</nav>
+
+<!-- Hero -->
+<section class="section--hero" id="hero">
+  <div class="deco-circle deco-circle--1"></div>
+  <div class="deco-circle deco-circle--2"></div>
+  <div class="overlap-block overlap-block--1"></div>
+  <div class="overlap-block overlap-block--2"></div>
+  <div class="deco-text deco-text--1">GLITCH GLITCH GLITCH</div>
+
+  <h1 class="hero__title">
+    <span class="hero__title-outline">GLITCH</span><br>
+    CONF <span class="hero__title-outline">2026</span>
+  </h1>
+
+  <p class="hero__tagline" id="tagline" aria-label="Where code meets creativity"></p>
+
+  <div class="hero__date rotated-text">Oct 15-17, 2026 / Berlin</div>
+
+  <!-- 3D Cube -->
+  <div class="cube-container">
+    <div class="cube">
+      <div class="cube__face cube__face--front">OCT 15<span>Day 1</span></div>
+      <div class="cube__face cube__face--back">OCT 17<span>Day 3</span></div>
+      <div class="cube__face cube__face--right">OCT 16<span>Day 2</span></div>
+      <div class="cube__face cube__face--left">BERLIN<span>Germany</span></div>
+      <div class="cube__face cube__face--top">2026<span>Year</span></div>
+      <div class="cube__face cube__face--bottom">GLITCH<span>Conf</span></div>
+    </div>
+  </div>
+
+  <!-- Countdown -->
+  <div class="countdown">
+    <div class="countdown__block">
+      <span class="countdown__number">23</span>
+      <span class="countdown__label">Days</span>
+    </div>
+    <div class="countdown__sep">:</div>
+    <div class="countdown__block">
+      <span class="countdown__number">14</span>
+      <span class="countdown__label">Hours</span>
+    </div>
+    <div class="countdown__sep">:</div>
+    <div class="countdown__block">
+      <span class="countdown__number">07</span>
+      <span class="countdown__label">Min</span>
+    </div>
+    <div class="countdown__sep">:</div>
+    <div class="countdown__block">
+      <span class="countdown__number">42</span>
+      <span class="countdown__label">Sec</span>
+    </div>
+  </div>
+
+  <a href="#tickets" class="btn-magnetic" style="margin-top: 3rem;">Get Tickets</a>
+</section>
+
+<!-- Speakers -->
+<section class="section--speakers" id="speakers">
+  <div class="deco-circle deco-circle--3"></div>
+  <div class="deco-text deco-text--2">SPEAKERS SPEAKERS</div>
+
+  <h2 class="section-header section-header--rotated">
+    The<br><span style="opacity:0.4">Speakers</span>
+  </h2>
+
+  <div class="speakers-grid">
+    <div class="speaker-card" data-tilt>
+      <div class="speaker-card__avatar speaker-card__avatar--1"></div>
+      <div class="speaker-card__name">Ada Chen</div>
+      <div class="speaker-card__role">Creative Technologist, Vercel</div>
+    </div>
+    <div class="speaker-card" data-tilt>
+      <div class="speaker-card__avatar speaker-card__avatar--2"></div>
+      <div class="speaker-card__name">Marcus Webb</div>
+      <div class="speaker-card__role">Shader Wizard, Unity</div>
+    </div>
+    <div class="speaker-card" data-tilt>
+      <div class="speaker-card__avatar speaker-card__avatar--3"></div>
+      <div class="speaker-card__name">Priya Patel</div>
+      <div class="speaker-card__role">Generative Art Lead, Google</div>
+    </div>
+    <div class="speaker-card" data-tilt>
+      <div class="speaker-card__avatar speaker-card__avatar--4"></div>
+      <div class="speaker-card__name">Leo Torres</div>
+      <div class="speaker-card__role">WebGL Alchemist, Freelance</div>
+    </div>
+    <div class="speaker-card" data-tilt>
+      <div class="speaker-card__avatar speaker-card__avatar--5"></div>
+      <div class="speaker-card__name">Nina Okafor</div>
+      <div class="speaker-card__role">Sound Designer &amp; Coder, Ableton</div>
+    </div>
+    <div class="speaker-card" data-tilt>
+      <div class="speaker-card__avatar speaker-card__avatar--6"></div>
+      <div class="speaker-card__name">Sven Erikson</div>
+      <div class="speaker-card__role">Creative Director, Spotify</div>
+    </div>
+  </div>
+</section>
+
+<!-- Schedule -->
+<section class="section--schedule" id="schedule">
+  <h2 class="section-header">The<br><span style="opacity:0.4">Schedule</span></h2>
+
+  <div class="schedule-wrapper">
+    <!-- Day 1 -->
+    <div class="schedule-day">
+      <h3 class="schedule-day__title">Day 1 &mdash; Oct 15</h3>
+      <table class="schedule-table">
+        <thead>
+          <tr><th>Time</th><th>Talk</th><th>Speaker</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>10:00</td><td class="talk-title">The Art of Breaking Interfaces</td><td class="talk-speaker">Ada Chen</td></tr>
+          <tr><td>13:00</td><td class="talk-title">Shaders for the Rest of Us</td><td class="talk-speaker">Marcus Webb</td></tr>
+          <tr><td>16:00</td><td class="talk-title">Generative Typography at Scale</td><td class="talk-speaker">Priya Patel</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Day 2 -->
+    <div class="schedule-day">
+      <h3 class="schedule-day__title">Day 2 &mdash; Oct 16</h3>
+      <table class="schedule-table">
+        <thead>
+          <tr><th>Time</th><th>Talk</th><th>Speaker</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>10:00</td><td class="talk-title">WebGL Beyond the Canvas</td><td class="talk-speaker">Leo Torres</td></tr>
+          <tr><td>13:00</td><td class="talk-title">Sonifying the Web</td><td class="talk-speaker">Nina Okafor</td></tr>
+          <tr><td>16:00</td><td class="talk-title">Motion Design with CSS Houdini</td><td class="talk-speaker">Sven Erikson</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Day 3 -->
+    <div class="schedule-day">
+      <h3 class="schedule-day__title">Day 3 &mdash; Oct 17</h3>
+      <table class="schedule-table">
+        <thead>
+          <tr><th>Time</th><th>Talk</th><th>Speaker</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>10:00</td><td class="talk-title">Creative Chaos: Live Coding Performance</td><td class="talk-speaker">Ada Chen &amp; Leo Torres</td></tr>
+          <tr><td>13:00</td><td class="talk-title">AI as Creative Collaborator</td><td class="talk-speaker">Priya Patel &amp; Marcus Webb</td></tr>
+          <tr><td>16:00</td><td class="talk-title">The Future is Weird: Closing Keynote</td><td class="talk-speaker">All Speakers Panel</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- Sponsors Marquee -->
+<section class="section--sponsors" id="sponsors">
+  <h2 class="section-header section-header--rotated">Our<br><span style="opacity:0.4">Sponsors</span></h2>
+
+  <div class="marquee-wrapper">
+    <div class="marquee">
+      <span class="marquee__item">Figma</span>
+      <span class="marquee__item">Vercel</span>
+      <span class="marquee__item">GitHub</span>
+      <span class="marquee__item">Stripe</span>
+      <span class="marquee__item">Notion</span>
+      <span class="marquee__item">Linear</span>
+      <span class="marquee__item">Framer</span>
+      <span class="marquee__item">Supabase</span>
+      <span class="marquee__item">Raycast</span>
+      <span class="marquee__item">Arc Browser</span>
+      <!-- Duplicate for seamless loop -->
+      <span class="marquee__item">Figma</span>
+      <span class="marquee__item">Vercel</span>
+      <span class="marquee__item">GitHub</span>
+      <span class="marquee__item">Stripe</span>
+      <span class="marquee__item">Notion</span>
+      <span class="marquee__item">Linear</span>
+      <span class="marquee__item">Framer</span>
+      <span class="marquee__item">Supabase</span>
+      <span class="marquee__item">Raycast</span>
+      <span class="marquee__item">Arc Browser</span>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="section--cta" id="tickets">
+  <div class="deco-circle deco-circle--1"></div>
+  <div class="deco-circle deco-circle--2"></div>
+
+  <h2 class="cta__title">
+    <span class="cta__title-outline">GET YOUR</span><br>TICKET
+  </h2>
+  <p style="font-size: clamp(1rem, 2vw, 1.5rem); opacity: 0.85; max-width: 600px; margin-bottom: 3rem; font-weight: 300;">
+    Three days of creative coding, mind-bending talks, and the weirdest afterparty in tech. Berlin. October. Be there.
+  </p>
+  <a href="#" class="btn-magnetic btn-wiggle" style="font-size: 1.3rem; padding: 1.5rem 4rem; background: #fff; color: #4338ca;">
+    Get Your Ticket &rarr;
+  </a>
+</section>
+
+<script>
+  // ── Typing Effect ──
+  (function() {
+    const text = "Where code meets creativity";
+    const el = document.getElementById('tagline');
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if (prefersReduced) {
+      el.textContent = text;
+      return;
+    }
+
+    let i = 0;
+    const cursor = document.createElement('span');
+    cursor.className = 'cursor';
+    cursor.textContent = '\u200B';
+    el.appendChild(cursor);
+
+    function type() {
+      if (i < text.length) {
+        el.insertBefore(document.createTextNode(text[i]), cursor);
+        i++;
+        setTimeout(type, 60 + Math.random() * 40);
+      }
+    }
+    setTimeout(type, 800);
+  })();
+
+  // ── Magnetic Buttons ──
+  (function() {
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (prefersReduced) return;
+
+    const buttons = document.querySelectorAll('.btn-magnetic');
+    const threshold = 120;
+
+    buttons.forEach(btn => {
+      btn.addEventListener('mousemove', function(e) {
+        const rect = btn.getBoundingClientRect();
+        const cx = rect.left + rect.width / 2;
+        const cy = rect.top + rect.height / 2;
+        const dx = e.clientX - cx;
+        const dy = e.clientY - cy;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+
+        if (dist < threshold) {
+          const pull = (1 - dist / threshold) * 0.35;
+          btn.style.transform = `translate(${dx * pull}px, ${dy * pull}px)`;
+        }
+      });
+
+      btn.addEventListener('mouseleave', function() {
+        btn.style.transform = '';
+      });
+    });
+  })();
+
+  // ── 3D Tilt on Speaker Cards ──
+  (function() {
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (prefersReduced) return;
+
+    const cards = document.querySelectorAll('[data-tilt]');
+
+    cards.forEach(card => {
+      card.addEventListener('mousemove', function(e) {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const cx = rect.width / 2;
+        const cy = rect.height / 2;
+        const rotateX = ((y - cy) / cy) * -12;
+        const rotateY = ((x - cx) / cx) * 12;
+        card.style.transform = `perspective(600px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.02)`;
+      });
+
+      card.addEventListener('mouseleave', function() {
+        card.style.transform = '';
+      });
+    });
+  })();
+</script>
+</body>
+</html>

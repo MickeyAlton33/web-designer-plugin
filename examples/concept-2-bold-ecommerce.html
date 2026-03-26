@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FUEGO - Handcrafted Hot Sauce</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Passion+One:wght@400;700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --cream: #FFF0E0;
+    --brand: #F9423A;
+    --brand-dark: #D9322A;
+    --dark: #1A1A1A;
+    --text: #333;
+    --peach: #FDDCB5;
+    --mint: #C8EAD3;
+    --lavender: #D9CCE8;
+    --butter: #F5E6A3;
+    --display: 'Passion One', cursive;
+    --body: 'Inter', sans-serif;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--body);
+    background: var(--cream);
+    color: var(--text);
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── UTILITY ── */
+  .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); border: 0; }
+
+  /* ── NAV ── */
+  .nav {
+    position: fixed; top: 0; left: 0; width: 100%; z-index: 1000;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1rem 2.5rem;
+    background: var(--cream);
+    border-bottom: 2px solid var(--dark);
+    transition: background 0.3s;
+  }
+  .nav.scrolled { background: var(--cream); box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+  .nav-logo {
+    font-family: var(--display);
+    font-size: 2rem;
+    font-weight: 900;
+    color: var(--brand);
+    text-transform: uppercase;
+    letter-spacing: -0.02em;
+    text-decoration: none;
+  }
+  .nav-links { display: flex; gap: 2rem; list-style: none; }
+  .nav-links a {
+    font-family: var(--display);
+    font-size: 1.1rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--dark);
+    text-decoration: none;
+    letter-spacing: 0.02em;
+    position: relative;
+  }
+  .nav-links a::after {
+    content: ''; position: absolute; bottom: -4px; left: 0;
+    width: 0; height: 3px; background: var(--brand);
+    transition: width 0.25s ease;
+  }
+  .nav-links a:hover::after { width: 100%; }
+  .nav-cart {
+    position: relative;
+    background: none; border: 2px solid var(--dark);
+    padding: 0.5rem 1.2rem;
+    font-family: var(--display);
+    font-size: 1rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    cursor: pointer;
+    background: var(--dark);
+    color: var(--cream);
+    transition: transform 0.15s, box-shadow 0.15s;
+    box-shadow: 4px 4px 0 var(--brand);
+  }
+  .nav-cart:active { transform: translate(4px, 4px); box-shadow: 0 0 0 var(--brand); }
+  .nav-cart-count {
+    position: absolute; top: -8px; right: -8px;
+    background: var(--brand); color: #fff;
+    font-size: 0.7rem; width: 20px; height: 20px;
+    display: flex; align-items: center; justify-content: center;
+    border: 2px solid var(--dark);
+  }
+
+  /* ── HERO ── */
+  .hero {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: var(--cream);
+    padding: 8rem 2rem 4rem;
+    overflow: hidden;
+  }
+  .hero-stacked-name {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    line-height: 0.8;
+    position: relative;
+    z-index: 2;
+  }
+  .hero-stacked-name span {
+    font-family: var(--display);
+    font-weight: 900;
+    font-size: clamp(5rem, 16vw, 15rem);
+    letter-spacing: -0.045em;
+    line-height: 0.8;
+    text-transform: uppercase;
+    display: block;
+    color: var(--dark);
+  }
+  .hero-stacked-name span:nth-child(1) {
+    -webkit-text-stroke: 3px var(--dark);
+    color: transparent;
+  }
+  .hero-stacked-name span:nth-child(2) {
+    color: var(--brand);
+  }
+  .hero-stacked-name span:nth-child(3) {
+    -webkit-text-stroke: 3px var(--brand);
+    color: transparent;
+    opacity: 0.4;
+  }
+  .hero-tagline {
+    font-family: var(--display);
+    font-size: clamp(1.2rem, 3vw, 2.2rem);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    margin-top: 2rem;
+    color: var(--text);
+    z-index: 2;
+  }
+  .hero-cta-row {
+    display: flex; gap: 1.5rem; margin-top: 3rem; z-index: 2;
+    flex-wrap: wrap; justify-content: center;
+  }
+
+  /* ── 3D BUTTONS ── */
+  .btn-3d {
+    font-family: var(--display);
+    font-size: 1.2rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 1rem 2.8rem;
+    border: 2px solid var(--dark);
+    cursor: pointer;
+    position: relative;
+    transition: transform 0.1s ease, box-shadow 0.1s ease;
+    text-decoration: none;
+    display: inline-block;
+  }
+  .btn-3d--brand {
+    background: var(--brand);
+    color: #fff;
+    box-shadow: 0 6px 0 var(--dark);
+  }
+  .btn-3d--brand:hover { transform: translateY(-2px); box-shadow: 0 8px 0 var(--dark); }
+  .btn-3d--brand:active { transform: translateY(6px); box-shadow: 0 0 0 var(--dark); }
+  .btn-3d--outline {
+    background: transparent;
+    color: var(--dark);
+    box-shadow: 0 6px 0 var(--dark);
+  }
+  .btn-3d--outline:hover { transform: translateY(-2px); box-shadow: 0 8px 0 var(--dark); }
+  .btn-3d--outline:active { transform: translateY(6px); box-shadow: 0 0 0 var(--dark); }
+  .btn-3d--cream {
+    background: var(--cream);
+    color: var(--dark);
+    box-shadow: 0 6px 0 rgba(0,0,0,0.4);
+    border-color: var(--cream);
+  }
+  .btn-3d--cream:hover { transform: translateY(-2px); box-shadow: 0 8px 0 rgba(0,0,0,0.4); }
+  .btn-3d--cream:active { transform: translateY(6px); box-shadow: 0 0 0 rgba(0,0,0,0.4); }
+
+  /* ── SPINNING STARBURST ── */
+  .starburst {
+    position: absolute;
+    width: 160px; height: 160px;
+    z-index: 3;
+    animation: spin 12s linear infinite;
+  }
+  .starburst--hero {
+    top: 15%; right: 8%;
+  }
+  .starburst svg { width: 100%; height: 100%; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .starburst-text {
+    position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: var(--display);
+    font-size: 0.85rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    line-height: 1.1;
+    text-align: center;
+    color: var(--cream);
+    pointer-events: none;
+  }
+
+  /* ── FLOATING BOTTLE (CSS-ONLY ILLUSTRATION) ── */
+  .hero-bottle {
+    position: absolute;
+    bottom: -40px;
+    left: 6%;
+    width: 120px;
+    height: 280px;
+    z-index: 5;
+    animation: float 4s ease-in-out infinite;
+    transform-origin: center bottom;
+  }
+  .bottle-body {
+    width: 80px; height: 180px;
+    background: var(--brand);
+    border: 3px solid var(--dark);
+    margin: 0 auto;
+    position: relative;
+  }
+  .bottle-neck {
+    width: 30px; height: 50px;
+    background: var(--brand-dark);
+    border: 3px solid var(--dark);
+    margin: 0 auto;
+    position: relative;
+  }
+  .bottle-cap {
+    width: 36px; height: 18px;
+    background: var(--dark);
+    margin: 0 auto;
+    border: 3px solid var(--dark);
+  }
+  .bottle-label {
+    position: absolute;
+    top: 30px; left: 8px; right: 8px;
+    height: 80px;
+    background: var(--cream);
+    border: 2px solid var(--dark);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--display);
+    font-size: 0.7rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    color: var(--dark);
+    letter-spacing: 0.05em;
+    text-align: center;
+    line-height: 1.1;
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0) rotate(-2deg); }
+    50% { transform: translateY(-20px) rotate(2deg); }
+  }
+
+  /* ── TORN PAPER SVG DIVIDER ── */
+  .divider-torn {
+    width: 100%;
+    display: block;
+    margin: -2px 0;
+    position: relative;
+    z-index: 10;
+  }
+  .divider-torn svg { width: 100%; height: auto; display: block; }
+
+  /* ── MARQUEE ── */
+  .marquee-section {
+    background: var(--dark);
+    border-top: 2px solid var(--dark);
+    border-bottom: 2px solid var(--dark);
+    overflow: hidden;
+    padding: 1rem 0;
+    position: relative;
+    z-index: 10;
+  }
+  .marquee-track {
+    display: flex;
+    width: max-content;
+    animation: marquee 20s linear infinite;
+  }
+  .marquee-item {
+    font-family: var(--display);
+    font-size: 1.4rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--cream);
+    white-space: nowrap;
+    padding: 0 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    letter-spacing: 0.04em;
+  }
+  .marquee-dot {
+    width: 10px; height: 10px;
+    background: var(--brand);
+    border-radius: 0;
+    display: inline-block;
+    flex-shrink: 0;
+  }
+  @keyframes marquee {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+
+  /* ── PRODUCTS SECTION ── */
+  .products-section {
+    background: var(--cream);
+    padding: 6rem 2rem;
+    position: relative;
+  }
+  .section-label {
+    font-family: var(--display);
+    font-size: 1rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--brand);
+    margin-bottom: 0.5rem;
+  }
+  .section-heading {
+    font-family: var(--display);
+    font-size: clamp(2.5rem, 6vw, 5rem);
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: -0.03em;
+    line-height: 0.95;
+    color: var(--dark);
+    margin-bottom: 3rem;
+  }
+
+  .products-carousel {
+    display: flex;
+    gap: 2rem;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    padding: 2rem 0 3rem;
+    scrollbar-width: none;
+  }
+  .products-carousel::-webkit-scrollbar { display: none; }
+
+  .product-card {
+    flex: 0 0 320px;
+    scroll-snap-align: start;
+    border: 2px solid var(--dark);
+    border-radius: 0;
+    padding: 2rem;
+    position: relative;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+    perspective: 600px;
+  }
+  .product-card:hover {
+    transform: translateY(-8px) rotateX(2deg) rotateY(-2deg);
+    box-shadow: 8px 12px 0 var(--dark);
+  }
+  .product-card--chipotle { background: var(--peach); }
+  .product-card--mango { background: var(--butter); }
+  .product-card--ghost { background: var(--lavender); }
+  .product-card--jalapeno { background: var(--mint); }
+
+  .product-card-badge {
+    position: absolute; top: -12px; right: -12px;
+    background: var(--brand); color: #fff;
+    font-family: var(--display); font-size: 0.85rem;
+    font-weight: 700; text-transform: uppercase;
+    padding: 0.4rem 1rem;
+    border: 2px solid var(--dark);
+    letter-spacing: 0.04em;
+  }
+  .product-illustration {
+    width: 100%; height: 200px;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 1.5rem;
+    position: relative;
+  }
+  .product-bottle-svg { height: 180px; width: auto; }
+  .product-heat-dots {
+    display: flex; gap: 6px; margin: 0.8rem 0;
+  }
+  .heat-dot {
+    width: 14px; height: 14px; border: 2px solid var(--dark);
+  }
+  .heat-dot--filled { background: var(--brand); }
+  .heat-dot--empty { background: transparent; }
+  .product-name {
+    font-family: var(--display);
+    font-size: 1.8rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    color: var(--dark);
+    letter-spacing: -0.01em;
+    line-height: 1;
+    margin-bottom: 0.3rem;
+  }
+  .product-desc {
+    font-family: var(--body);
+    font-size: 0.9rem;
+    color: var(--text);
+    line-height: 1.5;
+    margin-bottom: 1rem;
+  }
+  .product-price-row {
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .product-price {
+    font-family: var(--display);
+    font-size: 1.6rem;
+    font-weight: 900;
+    color: var(--dark);
+  }
+  .product-add-btn {
+    font-family: var(--display);
+    font-size: 0.9rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    padding: 0.6rem 1.4rem;
+    background: var(--dark);
+    color: var(--cream);
+    border: 2px solid var(--dark);
+    cursor: pointer;
+    box-shadow: 3px 3px 0 var(--brand);
+    transition: transform 0.1s, box-shadow 0.1s;
+    letter-spacing: 0.03em;
+  }
+  .product-add-btn:active {
+    transform: translate(3px, 3px);
+    box-shadow: 0 0 0 var(--brand);
+  }
+
+  /* ── STORY SECTION ── */
+  .story-section {
+    background: var(--dark);
+    color: var(--cream);
+    padding: 8rem 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .story-grid {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+  }
+  .story-left .section-label { color: var(--brand); }
+  .story-left .section-heading { color: var(--cream); }
+  .story-text {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    opacity: 0.85;
+    margin-bottom: 2rem;
+  }
+  .story-stats {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem;
+  }
+  .stat-item { text-align: left; }
+  .stat-number {
+    font-family: var(--display);
+    font-size: 3rem;
+    font-weight: 900;
+    color: var(--brand);
+    line-height: 1;
+  }
+  .stat-label {
+    font-family: var(--body);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    opacity: 0.6;
+    margin-top: 0.3rem;
+  }
+  .story-right {
+    position: relative;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .story-image-block {
+    width: 100%; aspect-ratio: 4/5;
+    background: var(--brand);
+    border: 2px solid var(--cream);
+    position: relative;
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden;
+  }
+  .story-image-block::before {
+    content: '';
+    position: absolute; inset: 12px;
+    border: 2px dashed rgba(255,255,255,0.3);
+  }
+  .story-image-text {
+    font-family: var(--display);
+    font-size: 6rem;
+    font-weight: 900;
+    color: rgba(255,255,255,0.15);
+    text-transform: uppercase;
+    writing-mode: vertical-rl;
+    letter-spacing: 0.1em;
+  }
+
+  /* ── SECOND MARQUEE (brand-red bg) ── */
+  .marquee-section--brand {
+    background: var(--brand);
+    border-color: var(--dark);
+  }
+  .marquee-section--brand .marquee-item { color: var(--dark); font-weight: 900; }
+  .marquee-section--brand .marquee-dot { background: var(--dark); }
+
+  /* ── CTA / SOCIAL SECTION ── */
+  .cta-section {
+    background: var(--cream);
+    padding: 8rem 2rem;
+    text-align: center;
+    position: relative;
+  }
+  .cta-section .section-heading { margin-bottom: 1.5rem; }
+  .cta-subtitle {
+    font-family: var(--body);
+    font-size: 1.15rem;
+    max-width: 600px;
+    margin: 0 auto 3rem;
+    line-height: 1.6;
+    color: var(--text);
+  }
+  .social-row {
+    display: flex; gap: 1rem; justify-content: center;
+    margin-top: 3rem;
+    flex-wrap: wrap;
+  }
+  .social-link {
+    font-family: var(--display);
+    font-size: 1rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--dark);
+    text-decoration: none;
+    padding: 0.8rem 1.8rem;
+    border: 2px solid var(--dark);
+    transition: background 0.2s, color 0.2s;
+    letter-spacing: 0.04em;
+  }
+  .social-link:hover {
+    background: var(--dark);
+    color: var(--cream);
+  }
+
+  /* ── NEWSLETTER ── */
+  .newsletter-row {
+    display: flex; max-width: 500px; margin: 0 auto;
+    border: 2px solid var(--dark);
+  }
+  .newsletter-input {
+    flex: 1;
+    font-family: var(--body);
+    font-size: 1rem;
+    padding: 1rem 1.2rem;
+    border: none;
+    background: #fff;
+    outline: none;
+  }
+  .newsletter-btn {
+    font-family: var(--display);
+    font-size: 1rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    background: var(--brand);
+    color: #fff;
+    border: none;
+    border-left: 2px solid var(--dark);
+    padding: 1rem 2rem;
+    cursor: pointer;
+    letter-spacing: 0.04em;
+    transition: background 0.2s;
+  }
+  .newsletter-btn:hover { background: var(--brand-dark); }
+
+  /* ── FOOTER ── */
+  .footer {
+    background: var(--brand);
+    border-top: 2px solid var(--dark);
+    padding: 4rem 2rem 2rem;
+    color: var(--dark);
+  }
+  .footer-grid {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 3rem;
+    margin-bottom: 3rem;
+  }
+  .footer-brand {
+    font-family: var(--display);
+    font-size: 3rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: -0.02em;
+    line-height: 1;
+    margin-bottom: 1rem;
+  }
+  .footer-tagline {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    opacity: 0.8;
+  }
+  .footer-col-title {
+    font-family: var(--display);
+    font-size: 1.1rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 1rem;
+  }
+  .footer-col ul { list-style: none; }
+  .footer-col li { margin-bottom: 0.5rem; }
+  .footer-col a {
+    color: var(--dark);
+    text-decoration: none;
+    font-size: 0.9rem;
+    opacity: 0.8;
+    transition: opacity 0.2s;
+  }
+  .footer-col a:hover { opacity: 1; text-decoration: underline; }
+  .footer-bottom {
+    border-top: 2px solid rgba(0,0,0,0.2);
+    padding-top: 1.5rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8rem;
+    opacity: 0.7;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  /* ── SCROLL ANIMATIONS ── */
+  .reveal {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .reveal-stagger { transition-delay: var(--stagger, 0s); }
+
+  /* ── REDUCED MOTION ── */
+  @media (prefers-reduced-motion: reduce) {
+    .marquee-track { animation: none; }
+    .starburst { animation: none; }
+    .hero-bottle { animation: none; }
+    .reveal { transition: none; opacity: 1; transform: none; }
+    .product-card { transition: none; }
+    .btn-3d { transition: none; }
+    html { scroll-behavior: auto; }
+    @keyframes float { 0%, 100% { transform: none; } }
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 900px) {
+    .story-grid { grid-template-columns: 1fr; gap: 3rem; }
+    .footer-grid { grid-template-columns: 1fr 1fr; }
+    .nav-links { display: none; }
+    .starburst--hero { width: 110px; height: 110px; top: 12%; right: 4%; }
+    .hero-bottle { display: none; }
+  }
+  @media (max-width: 600px) {
+    .footer-grid { grid-template-columns: 1fr; }
+    .product-card { flex: 0 0 280px; }
+    .story-stats { grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+    .stat-number { font-size: 2.2rem; }
+    .newsletter-row { flex-direction: column; }
+    .newsletter-btn { border-left: none; border-top: 2px solid var(--dark); }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav" id="nav">
+  <a href="#" class="nav-logo">Fuego</a>
+  <ul class="nav-links">
+    <li><a href="#products">Shop</a></li>
+    <li><a href="#story">Our Story</a></li>
+    <li><a href="#subscribe">Subscribe</a></li>
+  </ul>
+  <button class="nav-cart" aria-label="Shopping cart, 2 items">
+    Cart
+    <span class="nav-cart-count">2</span>
+  </button>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="hero">
+  <div class="hero-stacked-name" aria-label="FUEGO brand name">
+    <span aria-hidden="true">Fuego</span>
+    <span>Fuego</span>
+    <span aria-hidden="true">Fuego</span>
+  </div>
+  <p class="hero-tagline">Handcrafted Hot Sauce</p>
+  <div class="hero-cta-row">
+    <a href="#products" class="btn-3d btn-3d--brand">Shop Now</a>
+    <a href="#story" class="btn-3d btn-3d--outline">Our Story</a>
+  </div>
+
+  <!-- Spinning starburst badge -->
+  <div class="starburst starburst--hero">
+    <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+      <polygon points="100,0 115,70 180,20 130,80 200,100 130,120 180,180 115,130 100,200 85,130 20,180 70,120 0,100 70,80 20,20 85,70" fill="#1A1A1A"/>
+    </svg>
+    <span class="starburst-text">Small<br>Batch</span>
+  </div>
+
+  <!-- Floating bottle illustration -->
+  <div class="hero-bottle" aria-hidden="true">
+    <div class="bottle-cap"></div>
+    <div class="bottle-neck"></div>
+    <div class="bottle-body">
+      <div class="bottle-label">FUEGO<br>HOT<br>SAUCE</div>
+    </div>
+  </div>
+</section>
+
+<!-- TORN PAPER DIVIDER -->
+<div class="divider-torn" aria-hidden="true">
+  <svg viewBox="0 0 1440 60" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M0,0 L1440,0 L1440,20 Q1380,55 1300,25 Q1220,0 1140,30 Q1060,58 980,22 Q900,0 820,35 Q740,60 660,20 Q580,0 500,32 Q420,58 340,18 Q260,0 180,28 Q100,55 40,22 Q10,10 0,30 Z" fill="#FFF0E0"/>
+    <path d="M0,30 Q40,22 100,55 Q180,28 260,0 Q340,18 420,58 Q500,32 580,0 Q660,20 740,60 Q820,35 900,0 Q980,22 1060,58 Q1140,30 1220,0 Q1300,25 1380,55 Q1420,40 1440,20 L1440,60 L0,60 Z" fill="#1A1A1A"/>
+  </svg>
+</div>
+
+<!-- MARQUEE TICKER -->
+<section class="marquee-section" aria-label="Brand highlights">
+  <div class="marquee-track">
+    <span class="marquee-item"><span class="marquee-dot"></span>Handcrafted</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>All Natural</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>Small Batch</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>No Preservatives</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>Farm to Bottle</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>Vegan</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>Gluten Free</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>Made in Austin TX</span>
+    <!-- Duplicate for seamless loop -->
+    <span class="marquee-item"><span class="marquee-dot"></span>Handcrafted</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>All Natural</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>Small Batch</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>No Preservatives</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>Farm to Bottle</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>Vegan</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>Gluten Free</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>Made in Austin TX</span>
+  </div>
+</section>
+
+<!-- PRODUCTS -->
+<section class="products-section" id="products">
+  <div class="reveal">
+    <p class="section-label">The Lineup</p>
+    <h2 class="section-heading">Pick Your<br>Heat Level</h2>
+  </div>
+  <div class="products-carousel">
+
+    <!-- Smoky Chipotle -->
+    <div class="product-card product-card--chipotle reveal reveal-stagger" style="--stagger: 0s">
+      <span class="product-card-badge">Bestseller</span>
+      <div class="product-illustration">
+        <svg class="product-bottle-svg" viewBox="0 0 80 200" xmlns="http://www.w3.org/2000/svg">
+          <rect x="28" y="0" width="24" height="12" rx="0" fill="#1A1A1A"/>
+          <rect x="30" y="12" width="20" height="35" rx="0" fill="#C0392B"/>
+          <rect x="12" y="47" width="56" height="140" rx="0" fill="#C0392B" stroke="#1A1A1A" stroke-width="2"/>
+          <rect x="18" y="65" width="44" height="60" rx="0" fill="#FFF0E0" stroke="#1A1A1A" stroke-width="1.5"/>
+          <text x="40" y="88" text-anchor="middle" font-family="Passion One, sans-serif" font-size="9" font-weight="900" fill="#1A1A1A">FUEGO</text>
+          <text x="40" y="100" text-anchor="middle" font-family="Inter, sans-serif" font-size="5" fill="#1A1A1A">SMOKY</text>
+          <text x="40" y="108" text-anchor="middle" font-family="Inter, sans-serif" font-size="5" fill="#1A1A1A">CHIPOTLE</text>
+        </svg>
+      </div>
+      <h3 class="product-name">Smoky Chipotle</h3>
+      <div class="product-heat-dots" aria-label="Heat level: 2 out of 5">
+        <span class="heat-dot heat-dot--filled"></span>
+        <span class="heat-dot heat-dot--filled"></span>
+        <span class="heat-dot heat-dot--empty"></span>
+        <span class="heat-dot heat-dot--empty"></span>
+        <span class="heat-dot heat-dot--empty"></span>
+      </div>
+      <p class="product-desc">Rich, smoky depth meets the slow-building warmth of aged chipotle peppers.</p>
+      <div class="product-price-row">
+        <span class="product-price">$14</span>
+        <button class="product-add-btn">Add to Cart</button>
+      </div>
+    </div>
+
+    <!-- Habanero Mango -->
+    <div class="product-card product-card--mango reveal reveal-stagger" style="--stagger: 0.12s">
+      <span class="product-card-badge">Fan Fav</span>
+      <div class="product-illustration">
+        <svg class="product-bottle-svg" viewBox="0 0 80 200" xmlns="http://www.w3.org/2000/svg">
+          <rect x="28" y="0" width="24" height="12" rx="0" fill="#1A1A1A"/>
+          <rect x="30" y="12" width="20" height="35" rx="0" fill="#E67E22"/>
+          <rect x="12" y="47" width="56" height="140" rx="0" fill="#E67E22" stroke="#1A1A1A" stroke-width="2"/>
+          <rect x="18" y="65" width="44" height="60" rx="0" fill="#FFF0E0" stroke="#1A1A1A" stroke-width="1.5"/>
+          <text x="40" y="88" text-anchor="middle" font-family="Passion One, sans-serif" font-size="9" font-weight="900" fill="#1A1A1A">FUEGO</text>
+          <text x="40" y="100" text-anchor="middle" font-family="Inter, sans-serif" font-size="5" fill="#1A1A1A">HABANERO</text>
+          <text x="40" y="108" text-anchor="middle" font-family="Inter, sans-serif" font-size="5" fill="#1A1A1A">MANGO</text>
+        </svg>
+      </div>
+      <h3 class="product-name">Habanero Mango</h3>
+      <div class="product-heat-dots" aria-label="Heat level: 3 out of 5">
+        <span class="heat-dot heat-dot--filled"></span>
+        <span class="heat-dot heat-dot--filled"></span>
+        <span class="heat-dot heat-dot--filled"></span>
+        <span class="heat-dot heat-dot--empty"></span>
+        <span class="heat-dot heat-dot--empty"></span>
+      </div>
+      <p class="product-desc">Tropical mango sweetness cut with the fruity fire of habanero. Wings essential.</p>
+      <div class="product-price-row">
+        <span class="product-price">$14</span>
+        <button class="product-add-btn">Add to Cart</button>
+      </div>
+    </div>
+
+    <!-- Ghost Pepper -->
+    <div class="product-card product-card--ghost reveal reveal-stagger" style="--stagger: 0.24s">
+      <span class="product-card-badge">Extreme</span>
+      <div class="product-illustration">
+        <svg class="product-bottle-svg" viewBox="0 0 80 200" xmlns="http://www.w3.org/2000/svg">
+          <rect x="28" y="0" width="24" height="12" rx="0" fill="#1A1A1A"/>
+          <rect x="30" y="12" width="20" height="35" rx="0" fill="#8E44AD"/>
+          <rect x="12" y="47" width="56" height="140" rx="0" fill="#8E44AD" stroke="#1A1A1A" stroke-width="2"/>
+          <rect x="18" y="65" width="44" height="60" rx="0" fill="#FFF0E0" stroke="#1A1A1A" stroke-width="1.5"/>
+          <text x="40" y="88" text-anchor="middle" font-family="Passion One, sans-serif" font-size="9" font-weight="900" fill="#1A1A1A">FUEGO</text>
+          <text x="40" y="100" text-anchor="middle" font-family="Inter, sans-serif" font-size="5" fill="#1A1A1A">GHOST</text>
+          <text x="40" y="108" text-anchor="middle" font-family="Inter, sans-serif" font-size="5" fill="#1A1A1A">PEPPER</text>
+        </svg>
+      </div>
+      <h3 class="product-name">Ghost Pepper</h3>
+      <div class="product-heat-dots" aria-label="Heat level: 5 out of 5">
+        <span class="heat-dot heat-dot--filled"></span>
+        <span class="heat-dot heat-dot--filled"></span>
+        <span class="heat-dot heat-dot--filled"></span>
+        <span class="heat-dot heat-dot--filled"></span>
+        <span class="heat-dot heat-dot--filled"></span>
+      </div>
+      <p class="product-desc">Not for the faint of heart. Pure ghost pepper heat with a garlic backbone. Sign the waiver.</p>
+      <div class="product-price-row">
+        <span class="product-price">$16</span>
+        <button class="product-add-btn">Add to Cart</button>
+      </div>
+    </div>
+
+    <!-- Jalape&ntilde;o Lime -->
+    <div class="product-card product-card--jalapeno reveal reveal-stagger" style="--stagger: 0.36s">
+      <span class="product-card-badge">New</span>
+      <div class="product-illustration">
+        <svg class="product-bottle-svg" viewBox="0 0 80 200" xmlns="http://www.w3.org/2000/svg">
+          <rect x="28" y="0" width="24" height="12" rx="0" fill="#1A1A1A"/>
+          <rect x="30" y="12" width="20" height="35" rx="0" fill="#27AE60"/>
+          <rect x="12" y="47" width="56" height="140" rx="0" fill="#27AE60" stroke="#1A1A1A" stroke-width="2"/>
+          <rect x="18" y="65" width="44" height="60" rx="0" fill="#FFF0E0" stroke="#1A1A1A" stroke-width="1.5"/>
+          <text x="40" y="88" text-anchor="middle" font-family="Passion One, sans-serif" font-size="9" font-weight="900" fill="#1A1A1A">FUEGO</text>
+          <text x="40" y="100" text-anchor="middle" font-family="Inter, sans-serif" font-size="5" fill="#1A1A1A">JALAPE&Ntilde;O</text>
+          <text x="40" y="108" text-anchor="middle" font-family="Inter, sans-serif" font-size="5" fill="#1A1A1A">LIME</text>
+        </svg>
+      </div>
+      <h3 class="product-name">Jalape&ntilde;o Lime</h3>
+      <div class="product-heat-dots" aria-label="Heat level: 1 out of 5">
+        <span class="heat-dot heat-dot--filled"></span>
+        <span class="heat-dot heat-dot--empty"></span>
+        <span class="heat-dot heat-dot--empty"></span>
+        <span class="heat-dot heat-dot--empty"></span>
+        <span class="heat-dot heat-dot--empty"></span>
+      </div>
+      <p class="product-desc">Bright, zesty, and everyday-friendly. Squeeze it on literally everything.</p>
+      <div class="product-price-row">
+        <span class="product-price">$14</span>
+        <button class="product-add-btn">Add to Cart</button>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- TORN PAPER DIVIDER (cream to dark) -->
+<div class="divider-torn" aria-hidden="true">
+  <svg viewBox="0 0 1440 60" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M0,0 L1440,0 L1440,25 Q1370,5 1290,35 Q1210,58 1130,15 Q1050,0 970,40 Q890,55 810,10 Q730,0 650,30 Q570,55 490,12 Q410,0 330,38 Q250,55 170,15 Q90,0 30,25 Q5,35 0,20 Z" fill="#FFF0E0"/>
+    <path d="M0,20 Q5,35 30,25 Q90,0 170,15 Q250,55 330,38 Q410,0 490,12 Q570,55 650,30 Q730,0 810,10 Q890,55 970,40 Q1050,0 1130,15 Q1210,58 1290,35 Q1370,5 1440,25 L1440,60 L0,60 Z" fill="#1A1A1A"/>
+  </svg>
+</div>
+
+<!-- OUR STORY -->
+<section class="story-section" id="story">
+  <div class="story-grid">
+    <div class="story-left">
+      <p class="section-label reveal">The Origin</p>
+      <h2 class="section-heading reveal">Born in a<br>Backyard<br>Kitchen</h2>
+      <p class="story-text reveal">It started with a dare, a cast-iron skillet, and too many habaneros from the garden. What began as a family recipe passed down three generations became something we couldn't keep to ourselves. Every bottle of FUEGO is still made by hand in small batches -- no shortcuts, no concentrates, no filler. Just fire.</p>
+      <div class="story-stats reveal">
+        <div class="stat-item">
+          <div class="stat-number">47</div>
+          <div class="stat-label">Pepper Varieties</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">3rd</div>
+          <div class="stat-label">Generation Recipe</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">0</div>
+          <div class="stat-label">Preservatives</div>
+        </div>
+      </div>
+    </div>
+    <div class="story-right reveal">
+      <div class="story-image-block">
+        <span class="story-image-text" aria-hidden="true">FUEGO</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MARQUEE 2 (brand red) -->
+<section class="marquee-section marquee-section--brand" aria-label="Call to action highlights">
+  <div class="marquee-track" style="animation-direction: reverse;">
+    <span class="marquee-item"><span class="marquee-dot"></span>Free Shipping Over $40</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>Subscribe &amp; Save 15%</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>100% Satisfaction Guarantee</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>Build Your Own Bundle</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>Gift Sets Available</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>Free Shipping Over $40</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>Subscribe &amp; Save 15%</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>100% Satisfaction Guarantee</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>Build Your Own Bundle</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>Gift Sets Available</span>
+  </div>
+</section>
+
+<!-- CTA / SUBSCRIBE -->
+<section class="cta-section" id="subscribe">
+  <p class="section-label reveal">Stay in the Heat</p>
+  <h2 class="section-heading reveal">Join the<br>Inner Circle</h2>
+  <p class="cta-subtitle reveal">New flavors, early access drops, recipes, and 10% off your first order. No spam -- just fire.</p>
+  <div class="newsletter-row reveal">
+    <input type="email" class="newsletter-input" placeholder="YOUR EMAIL" aria-label="Email address">
+    <button class="newsletter-btn">Sign Up</button>
+  </div>
+  <div class="social-row reveal">
+    <a href="#" class="social-link">Instagram</a>
+    <a href="#" class="social-link">TikTok</a>
+    <a href="#" class="social-link">Twitter / X</a>
+    <a href="#" class="social-link">YouTube</a>
+  </div>
+</section>
+
+<!-- TORN PAPER DIVIDER (cream to brand red) -->
+<div class="divider-torn" aria-hidden="true">
+  <svg viewBox="0 0 1440 60" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M0,0 L1440,0 L1440,22 Q1350,50 1270,18 Q1190,0 1110,32 Q1030,55 950,15 Q870,0 790,28 Q710,52 630,12 Q550,0 470,35 Q390,55 310,20 Q230,0 150,30 Q70,52 20,18 Q2,8 0,28 Z" fill="#FFF0E0"/>
+    <path d="M0,28 Q2,8 20,18 Q70,52 150,30 Q230,0 310,20 Q390,55 470,35 Q550,0 630,12 Q710,52 790,28 Q870,0 950,15 Q1030,55 1110,32 Q1190,0 1270,18 Q1350,50 1440,22 L1440,60 L0,60 Z" fill="#F9423A"/>
+  </svg>
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-grid">
+    <div>
+      <div class="footer-brand">Fuego</div>
+      <p class="footer-tagline">Handcrafted hot sauce born in Austin, Texas. Small batch. Big heat. No compromises.</p>
+    </div>
+    <div class="footer-col">
+      <div class="footer-col-title">Shop</div>
+      <ul>
+        <li><a href="#">All Sauces</a></li>
+        <li><a href="#">Bundles</a></li>
+        <li><a href="#">Gift Sets</a></li>
+        <li><a href="#">Subscriptions</a></li>
+        <li><a href="#">Merch</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <div class="footer-col-title">Company</div>
+      <ul>
+        <li><a href="#">Our Story</a></li>
+        <li><a href="#">Wholesale</a></li>
+        <li><a href="#">Press</a></li>
+        <li><a href="#">Careers</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <div class="footer-col-title">Help</div>
+      <ul>
+        <li><a href="#">FAQ</a></li>
+        <li><a href="#">Shipping</a></li>
+        <li><a href="#">Returns</a></li>
+        <li><a href="#">Contact</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>&copy; 2026 FUEGO Hot Sauce Co. All rights reserved.</span>
+    <span>Privacy Policy &middot; Terms of Service</span>
+  </div>
+</footer>
+
+<script>
+  // ── NAV SCROLL ──
+  const nav = document.getElementById('nav');
+  let lastScroll = 0;
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', window.scrollY > 50);
+  }, { passive: true });
+
+  // ── SCROLL REVEAL with IntersectionObserver ──
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (!prefersReduced) {
+    const reveals = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+    reveals.forEach(el => observer.observe(el));
+  } else {
+    document.querySelectorAll('.reveal').forEach(el => el.classList.add('visible'));
+  }
+
+  // ── PRODUCT CARD 3D TILT ──
+  if (!prefersReduced) {
+    document.querySelectorAll('.product-card').forEach(card => {
+      card.addEventListener('mousemove', (e) => {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const centerX = rect.width / 2;
+        const centerY = rect.height / 2;
+        const rotateX = ((y - centerY) / centerY) * -4;
+        const rotateY = ((x - centerX) / centerX) * 4;
+        card.style.transform = `translateY(-8px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+      });
+      card.addEventListener('mouseleave', () => {
+        card.style.transform = '';
+      });
+    });
+  }
+</script>
+</body>
+</html>

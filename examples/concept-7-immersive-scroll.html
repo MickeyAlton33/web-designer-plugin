@@ -1,0 +1,989 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Lost Observatory</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=Dancing+Script:wght@400;700&family=Space+Grotesk:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --black: #161616;
+  --parchment: #faf9f5;
+  --crimson: #6c0e11;
+  --white-100: rgba(255, 255, 255, 1);
+  --white-70: rgba(255, 255, 255, 0.7);
+  --white-40: rgba(255, 255, 255, 0.4);
+  --serif: 'Cormorant Garamond', serif;
+  --sans: 'Space Grotesk', sans-serif;
+  --script: 'Dancing Script', cursive;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .parallax-layer { transform: none !important; }
+  .radar-dot::after { animation: none !important; }
+}
+
+html {
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: var(--crimson) var(--black);
+}
+
+body {
+  background: var(--black);
+  color: var(--parchment);
+  font-family: var(--serif);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* =========================================
+   LOADING OVERLAY
+   ========================================= */
+#loader {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  background: var(--black);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.8s ease, visibility 0.8s ease;
+}
+
+#loader.hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+#loader .counter {
+  font-family: var(--serif);
+  font-weight: 300;
+  font-size: clamp(80px, 15vw, 200px);
+  line-height: 0.2;
+  color: var(--white-100);
+  letter-spacing: -0.04em;
+  margin-bottom: 80px;
+}
+
+#loader .label {
+  font-family: var(--sans);
+  font-size: 11px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--white-40);
+}
+
+/* =========================================
+   SCROLL PROGRESS BAR
+   ========================================= */
+#scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 2px;
+  width: 0%;
+  background: var(--crimson);
+  z-index: 9999;
+  transition: width 0.05s linear;
+}
+
+/* =========================================
+   FIXED NAV
+   ========================================= */
+nav {
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 9000;
+  padding: 32px 40px;
+  display: flex;
+  gap: 32px;
+  mix-blend-mode: difference;
+}
+
+nav a {
+  font-family: var(--sans);
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--white-70);
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+nav a:hover {
+  color: var(--white-100);
+}
+
+/* =========================================
+   RADAR DOTS
+   ========================================= */
+.radar-dot {
+  position: fixed;
+  z-index: 8000;
+  width: 8px;
+  height: 8px;
+  background: var(--crimson);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.radar-dot::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: transparent;
+  box-shadow: 0 0 0 0 var(--crimson);
+  animation: radar-pulse 2.5s ease-out infinite;
+}
+
+@keyframes radar-pulse {
+  0% {
+    box-shadow: 0 0 0 0px rgba(108, 14, 17, 0.6);
+  }
+  100% {
+    box-shadow: 0 0 0 100px rgba(108, 14, 17, 0);
+  }
+}
+
+.radar-dot:nth-child(2)::after { animation-delay: 0.8s; }
+.radar-dot:nth-child(3)::after { animation-delay: 1.6s; }
+
+.radar-dot:nth-child(1) { top: 25%; left: 8%; }
+.radar-dot:nth-child(2) { top: 55%; left: 92%; }
+.radar-dot:nth-child(3) { top: 78%; left: 15%; }
+
+.radar-dot .dot-label {
+  position: absolute;
+  left: 20px;
+  top: -4px;
+  font-family: var(--sans);
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--white-40);
+  white-space: nowrap;
+}
+
+/* =========================================
+   MUSIC PLAYER
+   ========================================= */
+#music-player {
+  position: fixed;
+  bottom: 24px;
+  left: 24px;
+  z-index: 9000;
+  background: rgba(22, 22, 22, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  height: 36px;
+  width: 36px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1), height 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  gap: 12px;
+}
+
+#music-player.expanded {
+  width: 280px;
+  height: 36px;
+}
+
+#music-player .eq-bars {
+  display: flex;
+  gap: 2px;
+  align-items: flex-end;
+  height: 14px;
+  flex-shrink: 0;
+}
+
+#music-player .eq-bar {
+  width: 2px;
+  background: var(--white-70);
+  border-radius: 1px;
+  animation: eq-bounce 0.8s ease-in-out infinite alternate;
+}
+
+#music-player .eq-bar:nth-child(1) { height: 4px; animation-delay: 0s; }
+#music-player .eq-bar:nth-child(2) { height: 10px; animation-delay: 0.2s; }
+#music-player .eq-bar:nth-child(3) { height: 6px; animation-delay: 0.4s; }
+#music-player .eq-bar:nth-child(4) { height: 12px; animation-delay: 0.1s; }
+
+@keyframes eq-bounce {
+  0% { transform: scaleY(0.3); }
+  100% { transform: scaleY(1); }
+}
+
+#music-player .track-info {
+  opacity: 0;
+  white-space: nowrap;
+  transition: opacity 0.3s ease 0.15s;
+}
+
+#music-player.expanded .track-info {
+  opacity: 1;
+}
+
+#music-player .track-title {
+  font-family: var(--sans);
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--white-70);
+}
+
+#music-player .track-sub {
+  font-family: var(--sans);
+  font-size: 9px;
+  color: var(--white-40);
+  letter-spacing: 0.1em;
+}
+
+/* =========================================
+   SCENE ARCHITECTURE
+   ========================================= */
+.scroll-container {
+  position: relative;
+}
+
+.sticky-viewport {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.scroll-container--hero { height: 300vh; }
+.scroll-container--chapters { height: 500vh; }
+.scroll-container--stars { height: 300vh; }
+.scroll-container--fin { height: 200vh; }
+
+/* =========================================
+   PERSPECTIVE WRAPPER
+   ========================================= */
+.depth-scene {
+  perspective: 1200px;
+  perspective-origin: 50% 50%;
+  transform-style: preserve-3d;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.parallax-layer {
+  position: absolute;
+  transition: transform 0.1s linear;
+  will-change: transform;
+}
+
+/* =========================================
+   HERO SECTION
+   ========================================= */
+.hero-content {
+  text-align: center;
+  position: relative;
+  z-index: 2;
+}
+
+.hero-micro {
+  font-family: var(--sans);
+  font-size: 11px;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: var(--white-40);
+  margin-bottom: 40px;
+}
+
+.hero-title {
+  font-family: var(--serif);
+  font-weight: 300;
+  font-size: clamp(48px, 8vw, 95px);
+  line-height: 1.05;
+  color: var(--white-100);
+  letter-spacing: -0.02em;
+  margin-bottom: 32px;
+}
+
+.hero-title .typewriter {
+  display: inline-block;
+  border-right: 2px solid var(--white-70);
+  overflow: hidden;
+  white-space: nowrap;
+  width: 0;
+  animation: typing 2.5s steps(22, end) 1.8s forwards, blink-caret 0.6s step-end infinite;
+}
+
+@keyframes typing {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
+@keyframes blink-caret {
+  0%, 100% { border-color: var(--white-70); }
+  50% { border-color: transparent; }
+}
+
+.hero-sub {
+  font-family: var(--serif);
+  font-weight: 300;
+  font-style: italic;
+  font-size: clamp(16px, 2vw, 22px);
+  color: var(--white-40);
+  max-width: 480px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+.hero-scroll-hint {
+  position: absolute;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--sans);
+  font-size: 10px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--white-40);
+  animation: float-hint 2s ease-in-out infinite;
+}
+
+@keyframes float-hint {
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50% { transform: translateX(-50%) translateY(8px); }
+}
+
+/* =========================================
+   TEXTURE OVERLAY (aged map effect)
+   ========================================= */
+.texture-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.04;
+  mix-blend-mode: multiply;
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(250, 249, 245, 0.03) 2px,
+      rgba(250, 249, 245, 0.03) 4px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 2px,
+      rgba(250, 249, 245, 0.02) 2px,
+      rgba(250, 249, 245, 0.02) 4px
+    );
+  background-size: 100% 100%;
+}
+
+.grain-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 200px 200px;
+}
+
+/* =========================================
+   CHAPTERS
+   ========================================= */
+.chapter {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+  pointer-events: none;
+}
+
+.chapter.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.chapter-inner {
+  max-width: 640px;
+  padding: 0 32px;
+}
+
+.chapter-numeral {
+  font-family: var(--sans);
+  font-size: 10px;
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+  color: var(--white-40);
+  margin-bottom: 24px;
+}
+
+.chapter-title {
+  font-family: var(--serif);
+  font-weight: 300;
+  font-size: clamp(36px, 6vw, 72px);
+  line-height: 1.1;
+  color: var(--white-100);
+  letter-spacing: -0.02em;
+  margin-bottom: 28px;
+}
+
+.chapter-body {
+  font-family: var(--serif);
+  font-weight: 300;
+  font-size: clamp(16px, 1.8vw, 20px);
+  line-height: 1.7;
+  color: var(--white-70);
+}
+
+.chapter-body + .chapter-body {
+  margin-top: 16px;
+}
+
+.chapter-divider {
+  width: 40px;
+  height: 1px;
+  background: var(--white-40);
+  margin: 32px 0;
+}
+
+/* =========================================
+   STARS SECTION
+   ========================================= */
+.stars-canvas {
+  position: absolute;
+  inset: 0;
+}
+
+.star {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background: var(--white-100);
+  border-radius: 50%;
+  animation: twinkle 3s ease-in-out infinite alternate;
+}
+
+@keyframes twinkle {
+  0% { opacity: 0.2; }
+  100% { opacity: 1; }
+}
+
+.stars-text {
+  position: relative;
+  z-index: 3;
+  text-align: center;
+  max-width: 560px;
+  padding: 0 32px;
+}
+
+.stars-text .chapter-numeral { margin-bottom: 20px; }
+
+.stars-text .chapter-title {
+  font-size: clamp(32px, 5vw, 60px);
+  margin-bottom: 24px;
+}
+
+.stars-text .chapter-body {
+  font-style: italic;
+}
+
+/* =========================================
+   FIN SECTION
+   ========================================= */
+.fin-content {
+  text-align: center;
+}
+
+.fin-word {
+  font-family: var(--script);
+  font-size: clamp(48px, 8vw, 90px);
+  font-weight: 400;
+  color: var(--white-100);
+  opacity: 0;
+  transition: opacity 1.2s ease;
+}
+
+.fin-word.visible {
+  opacity: 1;
+}
+
+.fin-credit {
+  font-family: var(--sans);
+  font-size: 10px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--white-40);
+  margin-top: 40px;
+  opacity: 0;
+  transition: opacity 1.2s ease 0.5s;
+}
+
+.fin-word.visible ~ .fin-credit,
+.fin-credit.visible {
+  opacity: 1;
+}
+
+/* =========================================
+   DEPTH DECORATIVE ELEMENTS
+   ========================================= */
+.depth-line {
+  position: absolute;
+  background: var(--white-40);
+  opacity: 0.06;
+}
+
+.depth-line--h {
+  height: 1px;
+  width: 200px;
+}
+
+.depth-line--v {
+  width: 1px;
+  height: 200px;
+}
+
+.depth-circle {
+  position: absolute;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  border-radius: 50%;
+  width: 300px;
+  height: 300px;
+}
+
+/* =========================================
+   RESPONSIVE
+   ========================================= */
+@media (max-width: 768px) {
+  nav {
+    padding: 20px 24px;
+    gap: 20px;
+  }
+  nav a { font-size: 9px; }
+  .radar-dot:nth-child(2) { left: 85%; }
+  #music-player.expanded { width: 240px; }
+}
+</style>
+</head>
+<body>
+
+<!-- Loading Overlay -->
+<div id="loader">
+  <div class="counter" id="load-counter">0</div>
+  <div class="label">Loading experience</div>
+</div>
+
+<!-- Scroll Progress -->
+<div id="scroll-progress"></div>
+
+<!-- Texture Overlays -->
+<div class="texture-overlay"></div>
+<div class="grain-overlay"></div>
+
+<!-- Fixed Nav -->
+<nav>
+  <a href="#hero">Origin</a>
+  <a href="#chapters">Chapters</a>
+  <a href="#stars">Stars</a>
+  <a href="#fin">Fin</a>
+  <a href="#">Top</a>
+</nav>
+
+<!-- Radar Dots -->
+<div class="radar-dot"><span class="dot-label">Base Camp</span></div>
+<div class="radar-dot"><span class="dot-label">Ridge Pass</span></div>
+<div class="radar-dot"><span class="dot-label">Observatory</span></div>
+
+<!-- Music Player -->
+<div id="music-player" onclick="this.classList.toggle('expanded')">
+  <div class="eq-bars">
+    <div class="eq-bar"></div>
+    <div class="eq-bar"></div>
+    <div class="eq-bar"></div>
+    <div class="eq-bar"></div>
+  </div>
+  <div class="track-info">
+    <div class="track-title">Ambient Score &mdash; Chapter I</div>
+    <div class="track-sub">The Lost Observatory</div>
+  </div>
+</div>
+
+<!-- ==============================
+     SCENE 1: HERO
+     ============================== -->
+<section class="scroll-container scroll-container--hero" id="hero">
+  <div class="sticky-viewport">
+    <div class="depth-scene">
+      <!-- Depth decoration -->
+      <div class="parallax-layer" data-speed="0.02" style="top: 15%; left: 10%;">
+        <div class="depth-circle"></div>
+      </div>
+      <div class="parallax-layer" data-speed="0.05" style="bottom: 20%; right: 8%;">
+        <div class="depth-line depth-line--h"></div>
+      </div>
+      <div class="parallax-layer" data-speed="0.08" style="top: 30%; right: 15%;">
+        <div class="depth-line depth-line--v"></div>
+      </div>
+    </div>
+
+    <div class="hero-content parallax-layer" data-speed="0.12">
+      <div class="hero-micro">A Scroll-Driven Narrative</div>
+      <h1 class="hero-title">
+        <span class="typewriter">The Lost Observatory</span>
+      </h1>
+      <p class="hero-sub">
+        Somewhere above the treeline, where the air thins and the sky
+        remembers every star it has ever held, there is a door that no
+        one has opened in forty years.
+      </p>
+    </div>
+    <div class="hero-scroll-hint">Scroll to begin</div>
+  </div>
+</section>
+
+<!-- ==============================
+     SCENE 2: CHAPTERS (1-3)
+     ============================== -->
+<section class="scroll-container scroll-container--chapters" id="chapters">
+  <div class="sticky-viewport">
+    <div class="depth-scene">
+      <div class="parallax-layer" data-speed="0.03" style="top: 10%; left: 5%;">
+        <div class="depth-circle" style="width: 400px; height: 400px;"></div>
+      </div>
+      <div class="parallax-layer" data-speed="0.06" style="bottom: 10%; right: 10%;">
+        <div class="depth-line depth-line--v" style="height: 300px;"></div>
+      </div>
+    </div>
+
+    <!-- Chapter I -->
+    <div class="chapter" data-chapter="0">
+      <div class="chapter-inner parallax-layer" data-speed="0.1">
+        <div class="chapter-numeral">Chapter I</div>
+        <h2 class="chapter-title">The Map</h2>
+        <div class="chapter-divider"></div>
+        <p class="chapter-body">
+          It arrived in an envelope with no return address -- a hand-drawn
+          chart on paper so old it felt like holding a dead leaf. Contour
+          lines traced a mountain I had never heard of, and at the summit,
+          a single circle drawn in red ink.
+        </p>
+        <p class="chapter-body">
+          The postmark was illegible. The handwriting was my grandfather's.
+          He had been dead for eleven years.
+        </p>
+      </div>
+    </div>
+
+    <!-- Chapter II -->
+    <div class="chapter" data-chapter="1">
+      <div class="chapter-inner parallax-layer" data-speed="0.1">
+        <div class="chapter-numeral">Chapter II</div>
+        <h2 class="chapter-title">The Journey</h2>
+        <div class="chapter-divider"></div>
+        <p class="chapter-body">
+          Three days on foot past the last road. The forest gave way to
+          scree, and the scree to wind. My compass spun lazily, as though
+          the mountain itself was magnetic, pulling every needle toward
+          its peak.
+        </p>
+        <p class="chapter-body">
+          On the second night I heard something I could not explain -- a
+          low, resonant hum that seemed to rise from the stone beneath
+          my tent. It stopped exactly at midnight.
+        </p>
+      </div>
+    </div>
+
+    <!-- Chapter III -->
+    <div class="chapter" data-chapter="2">
+      <div class="chapter-inner parallax-layer" data-speed="0.1">
+        <div class="chapter-numeral">Chapter III</div>
+        <h2 class="chapter-title">The Discovery</h2>
+        <div class="chapter-divider"></div>
+        <p class="chapter-body">
+          The dome appeared through the fog like the skull of some vast,
+          sleeping creature. Copper green with decades of weather, its
+          shutters still partially open -- a frozen eye gazing at a sky
+          it could no longer see clearly.
+        </p>
+        <p class="chapter-body">
+          The door was unlocked. Inside, dust motes turned in shafts of
+          grey light, and at the center of the room, the telescope stood
+          upright and waiting, as if someone had only just stepped away.
+        </p>
+        <p class="chapter-body">
+          On the desk: a logbook. The last entry was dated the night my
+          grandfather disappeared.
+        </p>
+      </div>
+    </div>
+
+    <!-- Chapter V (The Return) -->
+    <div class="chapter" data-chapter="3">
+      <div class="chapter-inner parallax-layer" data-speed="0.1">
+        <div class="chapter-numeral">Chapter V</div>
+        <h2 class="chapter-title">The Return</h2>
+        <div class="chapter-divider"></div>
+        <p class="chapter-body">
+          I descended the mountain carrying the logbook and a single
+          photograph I found pressed between its pages -- my grandfather,
+          young, standing beside the telescope with a look of quiet
+          astonishment.
+        </p>
+        <p class="chapter-body">
+          The observatory is still there. The door is still unlocked. And
+          on clear nights, if you know where to look, you can see its
+          dome catch the moonlight like a signal meant for someone who
+          has not yet arrived.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==============================
+     SCENE 3: THE STARS
+     ============================== -->
+<section class="scroll-container scroll-container--stars" id="stars">
+  <div class="sticky-viewport">
+    <div class="stars-canvas" id="stars-canvas"></div>
+    <div class="stars-text parallax-layer" data-speed="0.08">
+      <div class="chapter-numeral">Chapter IV</div>
+      <h2 class="chapter-title">The Stars</h2>
+      <div class="chapter-divider" style="margin: 24px auto;"></div>
+      <p class="chapter-body">
+        I pointed the telescope where his logbook said and turned the
+        brass focusing ring until the blur resolved into light. Not one
+        star, but a cluster -- a tightly packed family of suns that no
+        catalogue had ever named. He had found them. He had told no one.
+      </p>
+      <p class="chapter-body" style="margin-top: 16px;">
+        In the margin of the logbook, in pencil so faint I nearly missed
+        it, he had written a single word: <em>home</em>.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ==============================
+     SCENE 4: FIN
+     ============================== -->
+<section class="scroll-container scroll-container--fin" id="fin">
+  <div class="sticky-viewport">
+    <div class="fin-content">
+      <div class="fin-word" id="fin-word">fin.</div>
+      <div class="fin-credit">A scroll-driven narrative</div>
+    </div>
+  </div>
+</section>
+
+<script>
+(function() {
+  'use strict';
+
+  /* =========================================
+     LOADING SEQUENCE
+     ========================================= */
+  const loader = document.getElementById('loader');
+  const counter = document.getElementById('load-counter');
+  let loadProgress = 0;
+
+  function animateLoader() {
+    const increment = Math.random() * 4 + 1;
+    loadProgress = Math.min(loadProgress + increment, 100);
+    counter.textContent = Math.floor(loadProgress);
+
+    if (loadProgress < 100) {
+      requestAnimationFrame(animateLoader);
+    } else {
+      setTimeout(function() {
+        loader.classList.add('hidden');
+      }, 400);
+    }
+  }
+
+  // Start loading after fonts hint
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(function() {
+      animateLoader();
+    });
+  } else {
+    setTimeout(animateLoader, 200);
+  }
+
+  /* =========================================
+     SCROLL PROGRESS
+     ========================================= */
+  const progressBar = document.getElementById('scroll-progress');
+
+  function updateScrollProgress() {
+    const scrollTop = window.scrollY;
+    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+    progressBar.style.width = progress + '%';
+  }
+
+  /* =========================================
+     PARALLAX LAYERS
+     ========================================= */
+  const parallaxLayers = document.querySelectorAll('.parallax-layer');
+
+  function updateParallax() {
+    const scrollY = window.scrollY;
+
+    parallaxLayers.forEach(function(layer) {
+      const speed = parseFloat(layer.dataset.speed) || 0;
+      const rect = layer.closest('.scroll-container');
+      if (!rect) return;
+
+      const containerTop = rect.offsetTop;
+      const relativeScroll = scrollY - containerTop;
+      const yOffset = relativeScroll * speed * -1;
+
+      layer.style.transform = 'translate3d(0, ' + yOffset + 'px, 0)';
+    });
+  }
+
+  /* =========================================
+     CHAPTER TRANSITIONS
+     ========================================= */
+  const chaptersSection = document.querySelector('.scroll-container--chapters');
+  const chapters = document.querySelectorAll('.chapter');
+
+  function updateChapters() {
+    if (!chaptersSection) return;
+
+    const containerTop = chaptersSection.offsetTop;
+    const containerHeight = chaptersSection.offsetHeight;
+    const viewportHeight = window.innerHeight;
+    const scrollInContainer = window.scrollY - containerTop;
+    const scrollRange = containerHeight - viewportHeight;
+
+    if (scrollInContainer < 0 || scrollInContainer > scrollRange) {
+      // Outside the container -- hide all if before, show last if after
+      if (scrollInContainer > scrollRange) {
+        chapters.forEach(function(ch, i) {
+          ch.classList.toggle('active', i === chapters.length - 1);
+        });
+      } else {
+        chapters.forEach(function(ch) { ch.classList.remove('active'); });
+      }
+      return;
+    }
+
+    const progress = scrollInContainer / scrollRange;
+    const chapterCount = chapters.length;
+    const activeIndex = Math.min(
+      Math.floor(progress * chapterCount),
+      chapterCount - 1
+    );
+
+    chapters.forEach(function(ch, i) {
+      ch.classList.toggle('active', i === activeIndex);
+    });
+  }
+
+  /* =========================================
+     FIN REVEAL
+     ========================================= */
+  const finSection = document.querySelector('.scroll-container--fin');
+  const finWord = document.getElementById('fin-word');
+  const finCredit = document.querySelector('.fin-credit');
+
+  function updateFin() {
+    if (!finSection || !finWord) return;
+    const rect = finSection.getBoundingClientRect();
+    if (rect.top < window.innerHeight * 0.6) {
+      finWord.classList.add('visible');
+      if (finCredit) finCredit.classList.add('visible');
+    }
+  }
+
+  /* =========================================
+     GENERATE STARS
+     ========================================= */
+  const starsCanvas = document.getElementById('stars-canvas');
+  if (starsCanvas) {
+    for (let i = 0; i < 120; i++) {
+      const star = document.createElement('div');
+      star.className = 'star';
+      star.style.left = Math.random() * 100 + '%';
+      star.style.top = Math.random() * 100 + '%';
+      star.style.animationDelay = (Math.random() * 3) + 's';
+      star.style.animationDuration = (2 + Math.random() * 3) + 's';
+      const size = Math.random() < 0.15 ? 3 : (Math.random() < 0.4 ? 2 : 1);
+      star.style.width = size + 'px';
+      star.style.height = size + 'px';
+      starsCanvas.appendChild(star);
+    }
+  }
+
+  /* =========================================
+     SCROLL HANDLER
+     ========================================= */
+  let ticking = false;
+
+  function onScroll() {
+    if (!ticking) {
+      requestAnimationFrame(function() {
+        updateScrollProgress();
+        updateParallax();
+        updateChapters();
+        updateFin();
+        ticking = false;
+      });
+      ticking = true;
+    }
+  }
+
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onScroll, { passive: true });
+
+  // Initial call
+  onScroll();
+
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MAISON NOIR — Fall Winter 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+  ::-webkit-scrollbar{display:none}
+  html{scrollbar-width:none;scroll-behavior:smooth}
+  body{
+    background:#000;color:#fff;
+    font-family:'Times New Roman',Times,serif;
+    overflow-x:hidden;
+    -ms-overflow-style:none;
+  }
+
+  /* ── TYPOGRAPHY ── */
+  .display{
+    font-family:'Times New Roman',Times,serif;
+    text-transform:uppercase;
+    letter-spacing:0.02em;
+    line-height:1.08;
+    font-weight:400;
+  }
+  .label{
+    font-family:'Montserrat',sans-serif;
+    font-size:12px;
+    text-transform:uppercase;
+    letter-spacing:0.12em;
+    font-weight:400;
+  }
+
+  /* ── NAVIGATION ── */
+  nav{
+    position:fixed;top:0;left:0;right:0;z-index:1000;
+    display:flex;justify-content:space-between;align-items:center;
+    padding:1.5rem 2.5rem;
+    background:rgba(0,0,0,0.4);
+    backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+    border-bottom:1px solid rgba(255,255,255,0.06);
+    transition:opacity 750ms ease;
+  }
+  .nav-logo{
+    font-family:'Times New Roman',Times,serif;
+    font-size:clamp(14px,1.2vw,18px);
+    text-transform:uppercase;
+    letter-spacing:0.15em;
+    color:#fff;
+  }
+  .nav-links{display:flex;gap:2.5rem;list-style:none;}
+  .nav-links a{
+    font-family:'Montserrat',sans-serif;
+    font-size:11px;text-transform:uppercase;
+    letter-spacing:0.14em;color:rgba(255,255,255,0.7);
+    text-decoration:none;
+    transition:opacity 750ms ease;
+    cursor:pointer;
+  }
+  .nav-links a:hover{opacity:1;color:#fff}
+
+  /* ── SECTIONS ── */
+  section{
+    opacity:0;
+    transition:opacity 1s ease;
+    will-change:opacity;
+  }
+  section.visible{opacity:1}
+
+  /* ── HERO ── */
+  .hero{
+    min-height:100vh;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+  }
+  .hero-text{
+    display:flex;flex-direction:column;justify-content:center;
+    padding:8rem 4rem 4rem 4rem;
+  }
+  .hero-season{
+    font-family:'Montserrat',sans-serif;
+    font-size:11px;text-transform:uppercase;
+    letter-spacing:0.18em;
+    color:rgba(255,255,255,0.5);
+    margin-bottom:2rem;
+  }
+  .hero-title{
+    font-size:clamp(48px,7vw,120px);
+    line-height:1.02;
+    letter-spacing:-0.01em;
+    text-transform:uppercase;
+    margin-bottom:2.5rem;
+  }
+  .hero-subtitle{
+    font-size:clamp(14px,1.2vw,18px);
+    line-height:1.7;
+    color:rgba(255,255,255,0.6);
+    max-width:420px;
+    font-style:italic;
+  }
+  .hero-image{
+    background:linear-gradient(160deg,#1a1a2e,#16213e,#0f3460,#533483);
+    background-size:200% 200%;
+    animation:heroShift 12s ease infinite;
+  }
+  @keyframes heroShift{
+    0%,100%{background-position:0% 50%}
+    50%{background-position:100% 50%}
+  }
+
+  /* ── CAROUSEL / EDITORIAL SPREADS ── */
+  .editorial{padding:0;position:relative;min-height:100vh}
+  .editorial-inner{
+    display:flex;
+    transition:transform 750ms cubic-bezier(0.25,0.1,0.25,1);
+    height:100vh;
+  }
+  .editorial-slide{
+    min-width:100vw;height:100vh;
+    position:relative;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .editorial-slide .bg{
+    position:absolute;inset:0;
+  }
+  .editorial-slide .overlay{
+    position:relative;z-index:2;
+    text-align:center;
+    padding:2rem;
+    background:rgba(0,0,0,0.3);
+    backdrop-filter:blur(30px);-webkit-backdrop-filter:blur(30px);
+    border:1px solid rgba(255,255,255,0.08);
+    max-width:600px;
+  }
+  .editorial-slide .overlay h2{
+    font-size:clamp(32px,4vw,64px);
+    text-transform:uppercase;
+    letter-spacing:0.02em;
+    line-height:1.08;
+    margin-bottom:1rem;
+  }
+  .editorial-slide .overlay p{
+    font-size:14px;line-height:1.8;
+    color:rgba(255,255,255,0.6);
+    font-style:italic;
+  }
+  .carousel-nav{
+    position:absolute;bottom:2.5rem;left:50%;
+    transform:translateX(-50%);z-index:10;
+    display:flex;gap:1rem;
+  }
+  .carousel-dot{
+    width:8px;height:8px;border-radius:50%;
+    background:rgba(255,255,255,0.25);
+    border:none;cursor:pointer;
+    transition:opacity 750ms ease;
+  }
+  .carousel-dot.active{background:rgba(255,255,255,0.9)}
+  .carousel-arrows{
+    position:absolute;top:50%;left:0;right:0;z-index:10;
+    display:flex;justify-content:space-between;
+    padding:0 2rem;
+    transform:translateY(-50%);
+    pointer-events:none;
+  }
+  .carousel-arrows button{
+    pointer-events:all;
+    background:rgba(0,0,0,0.3);
+    backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+    border:1px solid rgba(255,255,255,0.1);
+    color:#fff;
+    width:48px;height:48px;
+    font-family:'Times New Roman',serif;font-size:18px;
+    cursor:pointer;
+    transition:opacity 750ms ease;
+    opacity:0.6;
+  }
+  .carousel-arrows button:hover{opacity:1}
+
+  /* ── LOOKBOOK ── */
+  .lookbook{padding:8rem 2.5rem}
+  .lookbook-header{
+    text-align:center;
+    margin-bottom:4rem;
+  }
+  .lookbook-header h2{
+    font-size:clamp(36px,5vw,72px);
+    text-transform:uppercase;
+    letter-spacing:0.02em;
+    line-height:1.08;
+    margin-bottom:1rem;
+  }
+  .lookbook-header p{
+    font-family:'Montserrat',sans-serif;
+    font-size:11px;text-transform:uppercase;
+    letter-spacing:0.18em;
+    color:rgba(255,255,255,0.4);
+  }
+  .lookbook-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+    gap:3px;
+    max-width:1400px;
+    margin:0 auto;
+  }
+  .look-item{
+    position:relative;
+    aspect-ratio:3/4;
+    cursor:pointer;
+    overflow:hidden;
+    transition:opacity 750ms ease;
+  }
+  .look-item.span-2{grid-column:span 2}
+  .look-item .swatch{
+    width:100%;height:100%;
+  }
+  .look-item .look-number{
+    position:absolute;bottom:1rem;left:1rem;
+    font-family:'Montserrat',sans-serif;
+    font-size:10px;letter-spacing:0.15em;
+    text-transform:uppercase;
+    color:rgba(255,255,255,0.7);
+    mix-blend-mode:difference;
+  }
+  .look-item:hover{opacity:0.8}
+
+  /* ── CREDITS TICKER ── */
+  .credits{
+    padding:6rem 0;
+    border-top:1px solid rgba(255,255,255,0.06);
+    border-bottom:1px solid rgba(255,255,255,0.06);
+    overflow:hidden;
+  }
+  .credits-label{
+    text-align:center;
+    font-family:'Montserrat',sans-serif;
+    font-size:10px;text-transform:uppercase;
+    letter-spacing:0.2em;
+    color:rgba(255,255,255,0.3);
+    margin-bottom:2.5rem;
+  }
+  .ticker-track{
+    display:flex;
+    width:max-content;
+    animation:tickerScroll 40s linear infinite;
+  }
+  .ticker-item{
+    white-space:nowrap;
+    padding:0 3rem;
+    font-size:clamp(14px,1.5vw,20px);
+    font-style:italic;
+    color:rgba(255,255,255,0.45);
+  }
+  .ticker-item span{
+    font-family:'Montserrat',sans-serif;
+    font-size:9px;
+    text-transform:uppercase;
+    letter-spacing:0.15em;
+    color:rgba(255,255,255,0.25);
+    margin-right:0.8rem;
+    font-style:normal;
+  }
+  @keyframes tickerScroll{
+    0%{transform:translateX(0)}
+    100%{transform:translateX(-50%)}
+  }
+
+  /* ── GALLERY MODAL ── */
+  .gallery-modal{
+    position:fixed;inset:0;z-index:2000;
+    background:rgba(0,0,0,0.95);
+    display:flex;align-items:center;justify-content:center;
+    opacity:0;pointer-events:none;
+    transition:opacity 750ms ease;
+  }
+  .gallery-modal.open{opacity:1;pointer-events:all}
+  .gallery-frame{
+    width:calc(100vw - 2.5rem);
+    height:calc(100vh - 2.5rem);
+    position:relative;
+    display:flex;align-items:center;justify-content:center;
+    border:1px solid rgba(255,255,255,0.08);
+  }
+  .gallery-frame::before{
+    content:'';
+    position:absolute;
+    inset:1.25rem;
+    border:1px solid rgba(255,255,255,0.06);
+    pointer-events:none;
+  }
+  .gallery-frame .swatch-display{
+    width:60%;height:70%;
+    max-width:700px;
+    transition:opacity 750ms ease;
+  }
+  .gallery-info{
+    position:absolute;bottom:3rem;left:50%;
+    transform:translateX(-50%);
+    text-align:center;
+  }
+  .gallery-info .look-label{
+    font-family:'Montserrat',sans-serif;
+    font-size:10px;text-transform:uppercase;
+    letter-spacing:0.2em;
+    color:rgba(255,255,255,0.4);
+    margin-bottom:0.5rem;
+  }
+  .gallery-info .look-title{
+    font-size:clamp(20px,2.5vw,36px);
+    text-transform:uppercase;
+    letter-spacing:0.02em;
+    line-height:1.08;
+  }
+  .gallery-close{
+    position:absolute;top:1.5rem;right:1.5rem;
+    background:none;border:1px solid rgba(255,255,255,0.1);
+    color:#fff;
+    width:40px;height:40px;
+    font-family:'Times New Roman',serif;font-size:16px;
+    cursor:pointer;
+    transition:opacity 750ms ease;
+    opacity:0.6;
+    z-index:10;
+  }
+  .gallery-close:hover{opacity:1}
+  .gallery-prev,.gallery-next{
+    position:absolute;top:50%;
+    transform:translateY(-50%);
+    background:none;border:1px solid rgba(255,255,255,0.08);
+    color:#fff;
+    width:48px;height:48px;
+    font-family:'Times New Roman',serif;font-size:18px;
+    cursor:pointer;
+    transition:opacity 750ms ease;
+    opacity:0.5;
+  }
+  .gallery-prev{left:2rem}
+  .gallery-next{right:2rem}
+  .gallery-prev:hover,.gallery-next:hover{opacity:1}
+
+  /* ── FOOTER ── */
+  footer{
+    padding:6rem 2rem;
+    text-align:center;
+    border-top:1px solid rgba(255,255,255,0.06);
+  }
+  footer h2{
+    font-size:clamp(24px,3vw,48px);
+    text-transform:uppercase;
+    letter-spacing:0.1em;
+    line-height:1.08;
+    color:rgba(255,255,255,0.4);
+  }
+
+  /* ── RESPONSIVE ── */
+  @media(max-width:768px){
+    .hero{grid-template-columns:1fr;grid-template-rows:1fr 1fr}
+    .hero-text{padding:6rem 2rem 2rem 2rem}
+    .lookbook-grid{grid-template-columns:repeat(auto-fill,minmax(140px,1fr))}
+    .look-item.span-2{grid-column:span 1}
+    nav{padding:1.2rem 1.5rem}
+    .nav-links{gap:1.5rem}
+    .gallery-frame .swatch-display{width:80%;height:60%}
+  }
+</style>
+</head>
+<body>
+
+<!-- ── NAVIGATION ── -->
+<nav>
+  <div class="nav-logo">Maison Noir</div>
+  <ul class="nav-links">
+    <li><a href="#collection">Collection</a></li>
+    <li><a href="#lookbook">Lookbook</a></li>
+    <li><a href="#credits">Credits</a></li>
+    <li><a href="#gallery-section" id="nav-gallery">Gallery</a></li>
+  </ul>
+</nav>
+
+<!-- ── HERO ── -->
+<section class="hero visible" id="collection">
+  <div class="hero-text">
+    <div class="hero-season">Fall Winter 2026</div>
+    <h1 class="hero-title display">Maison<br>Noir</h1>
+    <p class="hero-subtitle">
+      A meditation on absence. Forty-two silhouettes tracing the architecture
+      of restraint, where every seam is a sentence and silence becomes the
+      most powerful gesture in the room.
+    </p>
+  </div>
+  <div class="hero-image"></div>
+</section>
+
+<!-- ── EDITORIAL CAROUSEL ── -->
+<section class="editorial" id="editorial">
+  <div class="editorial-inner" id="carouselInner"></div>
+  <div class="carousel-arrows">
+    <button onclick="carouselPrev()">&larr;</button>
+    <button onclick="carouselNext()">&rarr;</button>
+  </div>
+  <div class="carousel-nav" id="carouselNav"></div>
+</section>
+
+<!-- ── LOOKBOOK ── -->
+<section class="lookbook" id="lookbook">
+  <div class="lookbook-header">
+    <h2 class="display">Lookbook</h2>
+    <p>24 Looks &mdash; Fall Winter 2026</p>
+  </div>
+  <div class="lookbook-grid" id="lookbookGrid"></div>
+</section>
+
+<!-- ── CREDITS TICKER ── -->
+<section class="credits" id="credits">
+  <div class="credits-label">Press &amp; Credits</div>
+  <div class="ticker-track" id="tickerTrack"></div>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <h2 class="display">Maison Noir</h2>
+</footer>
+
+<!-- ── GALLERY MODAL ── -->
+<div class="gallery-modal" id="galleryModal">
+  <div class="gallery-frame">
+    <div class="swatch-display" id="gallerySwatch"></div>
+    <div class="gallery-info">
+      <div class="look-label" id="galleryLabel">Look 01</div>
+      <div class="look-title display" id="galleryTitle"></div>
+    </div>
+    <button class="gallery-close" onclick="closeGallery()">&times;</button>
+    <button class="gallery-prev" onclick="galleryPrev()">&larr;</button>
+    <button class="gallery-next" onclick="galleryNext()">&rarr;</button>
+  </div>
+</div>
+
+<script>
+/* ── DATA ── */
+const jewels = [
+  { name:'Midnight Garnet',     grad:'linear-gradient(135deg,#6b0f1a,#b91372)' },
+  { name:'Deep Sapphire',       grad:'linear-gradient(135deg,#0a1628,#1a4b8c)' },
+  { name:'Obsidian Silk',       grad:'linear-gradient(135deg,#0d0d0d,#2a2a2a)' },
+  { name:'Emerald Veil',        grad:'linear-gradient(135deg,#0b3d2e,#1a6b4a)' },
+  { name:'Burnt Amber',         grad:'linear-gradient(135deg,#4a1c0a,#c06014)' },
+  { name:'Plum Noir',           grad:'linear-gradient(135deg,#2d0a3e,#6b2fa0)' },
+  { name:'Antique Gold',        grad:'linear-gradient(135deg,#3d2b06,#c9a84c)' },
+  { name:'Slate Dusk',          grad:'linear-gradient(135deg,#1c1f26,#4a5568)' },
+  { name:'Crimson Fold',        grad:'linear-gradient(135deg,#4a0e0e,#a62626)' },
+  { name:'Prussian Night',      grad:'linear-gradient(135deg,#001a33,#003d6b)' },
+  { name:'Malachite Shadow',    grad:'linear-gradient(135deg,#0a2e1a,#2d8659)' },
+  { name:'Dusty Rose',          grad:'linear-gradient(135deg,#3d1f2a,#b56576)' },
+  { name:'Carbon',              grad:'linear-gradient(135deg,#111111,#333333)' },
+  { name:'Burgundy Velvet',     grad:'linear-gradient(135deg,#2b0a14,#722f37)' },
+  { name:'Teal Abyss',          grad:'linear-gradient(135deg,#0a2626,#1a6b6b)' },
+  { name:'Ivory Smoke',         grad:'linear-gradient(135deg,#d4cfc4,#8a8479)' },
+  { name:'Amethyst Haze',       grad:'linear-gradient(135deg,#1a0a2e,#5c2d82)' },
+  { name:'Burnt Sienna',        grad:'linear-gradient(135deg,#3d1c0a,#a0522d)' },
+  { name:'Onyx',                grad:'linear-gradient(135deg,#080808,#1a1a1a)' },
+  { name:'Deep Celadon',        grad:'linear-gradient(135deg,#1a3d2e,#5f9e80)' },
+  { name:'Claret',              grad:'linear-gradient(135deg,#2e0514,#6b1331)' },
+  { name:'Charcoal Mist',       grad:'linear-gradient(135deg,#1e1e24,#3a3a42)' },
+  { name:'Copper Leaf',         grad:'linear-gradient(135deg,#2e1a0a,#b87333)' },
+  { name:'Indigo Depth',        grad:'linear-gradient(135deg,#0a0a2e,#2e2e8a)' },
+];
+
+const spanIndices = new Set([0,5,10,17,22]);
+
+const slides = [
+  { bg:'linear-gradient(135deg,#1a1a2e,#533483)', title:'The Architecture of Restraint', text:'Forty-two silhouettes that speak in whispers. Structure becomes poetry when every line is intentional.' },
+  { bg:'linear-gradient(135deg,#0f3460,#16213e)', title:'Nocturne in Fabric', text:'Raw silk meets bonded wool. The hand of the fabric is the only ornament a garment needs.' },
+  { bg:'linear-gradient(135deg,#2d0a3e,#0b3d2e)', title:'Between Shadow & Form', text:'The negative space between body and cloth. This is where the collection truly lives.' },
+  { bg:'linear-gradient(135deg,#4a0e0e,#001a33)', title:'A Study in Black', text:'Seven shades of black, each with its own temperature. Warmth is a color when you know where to look.' },
+];
+
+const credits = [
+  {role:'Creative Director', name:'A. Morel'},
+  {role:'Photography', name:'Studio Voss'},
+  {role:'Styling', name:'K. Tanaka'},
+  {role:'Hair', name:'L. Beaumont'},
+  {role:'Makeup', name:'S. Park'},
+  {role:'Casting', name:'Bureau de Style'},
+  {role:'Music', name:'J. Sakamoto'},
+  {role:'Production', name:'Atelier Onze'},
+  {role:'Set Design', name:'M. Richter'},
+  {role:'Vogue', name:'"Definitive restraint"'},
+  {role:'WWD', name:'"The collection of the season"'},
+  {role:'Dazed', name:'"Silence as spectacle"'},
+  {role:'i-D', name:'"Radical subtraction"'},
+  {role:'CR Fashion Book', name:'"A masterclass"'},
+];
+
+/* ── CAROUSEL ── */
+let currentSlide = 0;
+const inner = document.getElementById('carouselInner');
+const nav = document.getElementById('carouselNav');
+
+slides.forEach((s,i) => {
+  const el = document.createElement('div');
+  el.className = 'editorial-slide';
+  el.innerHTML = `<div class="bg" style="background:${s.bg}"></div>
+    <div class="overlay">
+      <h2 class="display">${s.title}</h2>
+      <p>${s.text}</p>
+    </div>`;
+  inner.appendChild(el);
+
+  const dot = document.createElement('button');
+  dot.className = 'carousel-dot' + (i===0?' active':'');
+  dot.onclick = () => goToSlide(i);
+  nav.appendChild(dot);
+});
+
+function goToSlide(n) {
+  currentSlide = n;
+  inner.style.transform = `translateX(-${n*100}vw)`;
+  document.querySelectorAll('.carousel-dot').forEach((d,i) => d.classList.toggle('active',i===n));
+}
+function carouselNext() { goToSlide((currentSlide+1) % slides.length); }
+function carouselPrev() { goToSlide((currentSlide - 1 + slides.length) % slides.length); }
+
+/* ── LOOKBOOK GRID ── */
+const grid = document.getElementById('lookbookGrid');
+jewels.forEach((j,i) => {
+  const el = document.createElement('div');
+  el.className = 'look-item' + (spanIndices.has(i) ? ' span-2' : '');
+  el.innerHTML = `<div class="swatch" style="background:${j.grad}"></div>
+    <div class="look-number">Look ${String(i+1).padStart(2,'0')}</div>`;
+  el.onclick = () => openGallery(i);
+  grid.appendChild(el);
+});
+
+/* ── CREDITS TICKER ── */
+const track = document.getElementById('tickerTrack');
+const tickerHTML = credits.map(c => `<div class="ticker-item"><span>${c.role}</span>${c.name}</div>`).join('');
+track.innerHTML = tickerHTML + tickerHTML;
+
+/* ── GALLERY ── */
+let galleryIndex = 0;
+const modal = document.getElementById('galleryModal');
+const galSwatch = document.getElementById('gallerySwatch');
+const galLabel = document.getElementById('galleryLabel');
+const galTitle = document.getElementById('galleryTitle');
+
+function openGallery(i) {
+  galleryIndex = i;
+  updateGallery();
+  modal.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeGallery() {
+  modal.classList.remove('open');
+  document.body.style.overflow = '';
+}
+function updateGallery() {
+  const j = jewels[galleryIndex];
+  galSwatch.style.background = j.grad;
+  galLabel.textContent = `Look ${String(galleryIndex+1).padStart(2,'0')}`;
+  galTitle.textContent = j.name;
+}
+function galleryNext() { galleryIndex = (galleryIndex+1) % jewels.length; updateGallery(); }
+function galleryPrev() { galleryIndex = (galleryIndex-1+jewels.length) % jewels.length; updateGallery(); }
+
+modal.addEventListener('click', e => { if(e.target === modal) closeGallery(); });
+document.addEventListener('keydown', e => {
+  if(!modal.classList.contains('open')) return;
+  if(e.key==='Escape') closeGallery();
+  if(e.key==='ArrowRight') galleryNext();
+  if(e.key==='ArrowLeft') galleryPrev();
+});
+
+/* ── SCROLL FADE ── */
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if(e.isIntersecting) e.target.classList.add('visible');
+  });
+}, { threshold: 0.15 });
+
+document.querySelectorAll('section').forEach(s => {
+  if(!s.classList.contains('visible')) observer.observe(s);
+});
+</script>
+</body>
+</html>

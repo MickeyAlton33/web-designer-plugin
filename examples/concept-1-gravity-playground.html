@@ -1,0 +1,1033 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nova Chen — The Gravity Playground</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --bg: #0a0a0a;
+  --accent: #c8ff00;
+  --text: #e8e5dd;
+  --muted: rgba(255,255,255,0.4);
+  --card-glass: rgba(255,255,255,0.04);
+  --card-border: rgba(255,255,255,0.08);
+}
+
+html {
+  scroll-behavior: smooth;
+  cursor: none;
+}
+
+body {
+  font-family: 'Space Grotesk', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  overflow-x: hidden;
+  cursor: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Noise overlay */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 256px 256px;
+}
+
+/* Custom cursor */
+.cursor {
+  position: fixed;
+  width: 32px;
+  height: 32px;
+  border: 1.5px solid var(--accent);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 10000;
+  transform: translate(-50%, -50%);
+  transition: width 0.3s cubic-bezier(0.23, 1, 0.32, 1),
+              height 0.3s cubic-bezier(0.23, 1, 0.32, 1),
+              border-color 0.3s ease,
+              background 0.3s ease;
+  mix-blend-mode: difference;
+}
+
+.cursor.hovering-card {
+  width: 80px;
+  height: 80px;
+  background: rgba(200, 255, 0, 0.06);
+  border-color: rgba(200, 255, 0, 0.5);
+}
+
+.cursor-dot {
+  position: fixed;
+  width: 5px;
+  height: 5px;
+  background: var(--accent);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 10001;
+  transform: translate(-50%, -50%);
+}
+
+/* =========== HERO =========== */
+.hero {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 0 clamp(1.5rem, 4vw, 4rem);
+  padding-bottom: clamp(3rem, 8vh, 6rem);
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-label {
+  font-family: 'Courier New', monospace;
+  font-size: clamp(0.7rem, 1vw, 0.9rem);
+  color: var(--muted);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-bottom: 1.5rem;
+}
+
+.hero-name {
+  font-size: clamp(5rem, 14vw, 15rem);
+  font-weight: 700;
+  line-height: 0.85;
+  letter-spacing: -0.04em;
+  color: transparent;
+  -webkit-text-stroke: 1.5px var(--text);
+  transition: color 0.5s cubic-bezier(0.23, 1, 0.32, 1),
+              -webkit-text-stroke 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+  user-select: none;
+  position: relative;
+}
+
+.hero-name:hover {
+  color: var(--accent);
+  -webkit-text-stroke: 1.5px var(--accent);
+}
+
+.hero-name span {
+  display: inline-block;
+  transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.hero-name:hover span:nth-child(odd) {
+  transform: translateY(-8px) rotate(-2deg);
+}
+
+.hero-name:hover span:nth-child(even) {
+  transform: translateY(5px) rotate(1.5deg);
+}
+
+.hero-sub {
+  margin-top: clamp(1.5rem, 3vw, 2.5rem);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.hero-tagline {
+  font-size: clamp(1rem, 1.8vw, 1.4rem);
+  font-weight: 400;
+  color: var(--muted);
+  max-width: 30ch;
+  line-height: 1.5;
+}
+
+.hero-tagline .word {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: wordReveal 0.5s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+}
+
+@keyframes wordReveal {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hero-scroll {
+  font-family: 'Courier New', monospace;
+  font-size: 0.75rem;
+  color: var(--muted);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.hero-scroll .line {
+  width: 40px;
+  height: 1px;
+  background: var(--muted);
+  animation: scrollPulse 2s ease-in-out infinite;
+}
+
+@keyframes scrollPulse {
+  0%, 100% { opacity: 0.4; transform: scaleX(1); }
+  50% { opacity: 1; transform: scaleX(1.3); transform-origin: left; }
+}
+
+/* =========== PROJECTS =========== */
+.projects {
+  padding: clamp(4rem, 10vh, 8rem) clamp(1.5rem, 4vw, 4rem);
+  position: relative;
+}
+
+.projects-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: clamp(3rem, 6vw, 5rem);
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.section-title {
+  font-size: clamp(0.7rem, 1vw, 0.85rem);
+  font-family: 'Courier New', monospace;
+  color: var(--accent);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.section-count {
+  font-family: 'Courier New', monospace;
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  grid-auto-rows: minmax(100px, auto);
+  gap: clamp(1rem, 2vw, 1.5rem);
+}
+
+.project-card {
+  position: relative;
+  background: var(--card-glass);
+  border: 1px solid var(--card-border);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  padding: clamp(1.5rem, 2.5vw, 2.5rem);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  overflow: hidden;
+  will-change: transform;
+  transition: border-color 0.4s ease;
+  transform-style: preserve-3d;
+  perspective: 800px;
+}
+
+.project-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  pointer-events: none;
+}
+
+.project-card:hover {
+  border-color: rgba(255,255,255,0.15);
+}
+
+.project-card:hover::before {
+  opacity: 1;
+}
+
+/* Asymmetric grid placement */
+.project-card:nth-child(1) {
+  grid-column: 1 / 7;
+  grid-row: 1 / 3;
+  min-height: 420px;
+  border-radius: 2px 24px 2px 2px;
+}
+.project-card:nth-child(1)::before {
+  background: radial-gradient(ellipse at 30% 50%, rgba(200,255,0,0.06), transparent 70%);
+}
+
+.project-card:nth-child(2) {
+  grid-column: 7 / 13;
+  grid-row: 1 / 2;
+  min-height: 240px;
+  border-radius: 24px 2px 2px 2px;
+}
+.project-card:nth-child(2)::before {
+  background: radial-gradient(ellipse at 70% 30%, rgba(255,100,50,0.06), transparent 70%);
+}
+
+.project-card:nth-child(3) {
+  grid-column: 7 / 10;
+  grid-row: 2 / 3;
+  min-height: 220px;
+  border-radius: 2px;
+}
+.project-card:nth-child(3)::before {
+  background: radial-gradient(ellipse at 50% 70%, rgba(100,200,255,0.06), transparent 70%);
+}
+
+.project-card:nth-child(4) {
+  grid-column: 10 / 13;
+  grid-row: 2 / 3;
+  min-height: 220px;
+  border-radius: 2px 2px 24px 2px;
+}
+.project-card:nth-child(4)::before {
+  background: radial-gradient(ellipse at 50% 50%, rgba(200,100,255,0.06), transparent 70%);
+}
+
+.project-card:nth-child(5) {
+  grid-column: 1 / 5;
+  grid-row: 3 / 4;
+  min-height: 300px;
+  border-radius: 2px 2px 2px 24px;
+}
+.project-card:nth-child(5)::before {
+  background: radial-gradient(ellipse at 30% 70%, rgba(255,200,50,0.06), transparent 70%);
+}
+
+.project-card:nth-child(6) {
+  grid-column: 5 / 13;
+  grid-row: 3 / 4;
+  min-height: 300px;
+  border-radius: 2px 24px 2px 24px;
+}
+.project-card:nth-child(6)::before {
+  background: radial-gradient(ellipse at 60% 40%, rgba(50,255,150,0.06), transparent 70%);
+}
+
+.card-number {
+  font-family: 'Courier New', monospace;
+  font-size: 0.7rem;
+  color: var(--muted);
+  letter-spacing: 0.1em;
+  margin-bottom: auto;
+}
+
+.card-content {
+  position: relative;
+  z-index: 1;
+}
+
+.card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.card-tag {
+  font-family: 'Courier New', monospace;
+  font-size: 0.65rem;
+  color: var(--muted);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.25rem 0.6rem;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 100px;
+}
+
+.card-title {
+  font-size: clamp(1.3rem, 2.5vw, 2rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  margin-bottom: 0.5rem;
+}
+
+.card-desc {
+  font-size: clamp(0.8rem, 1vw, 0.9rem);
+  color: var(--muted);
+  line-height: 1.5;
+  max-width: 35ch;
+}
+
+.card-accent-line {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 2px;
+  width: 0;
+  transition: width 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.project-card:hover .card-accent-line {
+  width: 100%;
+}
+
+.project-card:nth-child(1) .card-accent-line { background: var(--accent); }
+.project-card:nth-child(2) .card-accent-line { background: #ff6432; }
+.project-card:nth-child(3) .card-accent-line { background: #64c8ff; }
+.project-card:nth-child(4) .card-accent-line { background: #c864ff; }
+.project-card:nth-child(5) .card-accent-line { background: #ffc832; }
+.project-card:nth-child(6) .card-accent-line { background: #32ff96; }
+
+/* Reveal animations */
+.reveal {
+  opacity: 0;
+  transform: translateY(60px);
+  transition: opacity 0.8s cubic-bezier(0.23, 1, 0.32, 1),
+              transform 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* =========== ABOUT =========== */
+.about {
+  padding: clamp(6rem, 12vh, 10rem) clamp(1.5rem, 4vw, 4rem);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(3rem, 6vw, 6rem);
+  align-items: center;
+  min-height: 80vh;
+}
+
+.about-text .section-title {
+  margin-bottom: 2rem;
+}
+
+.about-heading {
+  font-size: clamp(2rem, 4vw, 3.5rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  margin-bottom: 1.5rem;
+}
+
+.about-heading .accent {
+  color: var(--accent);
+}
+
+.about-body {
+  font-size: clamp(0.9rem, 1.2vw, 1.05rem);
+  color: var(--muted);
+  line-height: 1.7;
+  max-width: 45ch;
+  margin-bottom: 2rem;
+}
+
+.about-stats {
+  display: flex;
+  gap: 3rem;
+  flex-wrap: wrap;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-num {
+  font-size: clamp(2rem, 3vw, 2.8rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: var(--text);
+}
+
+.stat-label {
+  font-family: 'Courier New', monospace;
+  font-size: 0.7rem;
+  color: var(--muted);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-top: 0.25rem;
+}
+
+.about-canvas-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+  max-width: 550px;
+  justify-self: end;
+}
+
+#constellation-canvas {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.05);
+}
+
+/* =========== FOOTER / CTA =========== */
+.footer {
+  padding: clamp(6rem, 15vh, 12rem) clamp(1.5rem, 4vw, 4rem);
+  padding-bottom: clamp(3rem, 6vh, 5rem);
+  position: relative;
+}
+
+.footer-cta {
+  font-size: clamp(3rem, 8vw, 8rem);
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  line-height: 0.95;
+  margin-bottom: 3rem;
+}
+
+.footer-cta a {
+  color: var(--text);
+  text-decoration: none;
+  position: relative;
+  display: inline-block;
+  transition: color 0.4s ease;
+}
+
+.footer-cta a::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0.05em;
+  width: 100%;
+  height: 0.06em;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.footer-cta a:hover {
+  color: var(--accent);
+}
+
+.footer-cta a:hover::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+.footer-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  padding-top: 2rem;
+  border-top: 1px solid rgba(255,255,255,0.06);
+}
+
+.footer-links {
+  display: flex;
+  gap: 2rem;
+}
+
+.footer-links a {
+  font-family: 'Courier New', monospace;
+  font-size: 0.75rem;
+  color: var(--muted);
+  text-decoration: none;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transition: color 0.3s ease;
+}
+
+.footer-links a:hover {
+  color: var(--accent);
+}
+
+.footer-copy {
+  font-family: 'Courier New', monospace;
+  font-size: 0.7rem;
+  color: rgba(255,255,255,0.2);
+  letter-spacing: 0.05em;
+}
+
+/* =========== RESPONSIVE =========== */
+@media (max-width: 900px) {
+  .projects-grid {
+    grid-template-columns: 1fr 1fr;
+    grid-auto-rows: auto;
+  }
+  .project-card:nth-child(1),
+  .project-card:nth-child(2),
+  .project-card:nth-child(3),
+  .project-card:nth-child(4),
+  .project-card:nth-child(5),
+  .project-card:nth-child(6) {
+    grid-column: auto;
+    grid-row: auto;
+    min-height: 260px;
+    border-radius: 2px;
+  }
+  .project-card:nth-child(1) { border-radius: 2px 18px 2px 2px; }
+  .project-card:nth-child(6) { border-radius: 2px 2px 18px 2px; }
+
+  .about {
+    grid-template-columns: 1fr;
+  }
+  .about-canvas-wrap {
+    justify-self: center;
+    max-width: 350px;
+  }
+}
+
+@media (max-width: 600px) {
+  .projects-grid {
+    grid-template-columns: 1fr;
+  }
+  .project-card:nth-child(n) {
+    min-height: 220px;
+  }
+}
+
+/* =========== REDUCED MOTION =========== */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  html { scroll-behavior: auto; }
+  .reveal { opacity: 1; transform: none; }
+  .hero-tagline .word { opacity: 1; transform: none; }
+}
+
+a { cursor: none; }
+</style>
+</head>
+<body>
+
+<!-- Custom cursor -->
+<div class="cursor" id="cursor"></div>
+<div class="cursor-dot" id="cursorDot"></div>
+
+<!-- HERO -->
+<section class="hero">
+  <p class="hero-label">Design / Direction / Motion</p>
+  <h1 class="hero-name" id="heroName" aria-label="Nova Chen"></h1>
+  <div class="hero-sub">
+    <p class="hero-tagline" id="heroTagline"></p>
+    <span class="hero-scroll"><span class="line"></span> Scroll to explore</span>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section class="projects" id="projects">
+  <div class="projects-header reveal">
+    <span class="section-title">Selected Work</span>
+    <span class="section-count">01 &mdash; 06</span>
+  </div>
+  <div class="projects-grid" id="projectsGrid">
+
+    <div class="project-card reveal" data-delay="0">
+      <span class="card-number">01</span>
+      <div class="card-content">
+        <div class="card-tags"><span class="card-tag">Branding</span><span class="card-tag">Web</span></div>
+        <h3 class="card-title">Meridian Protocol</h3>
+        <p class="card-desc">Identity system and web presence for a decentralized finance platform.</p>
+      </div>
+      <div class="card-accent-line"></div>
+    </div>
+
+    <div class="project-card reveal" data-delay="100">
+      <span class="card-number">02</span>
+      <div class="card-content">
+        <div class="card-tags"><span class="card-tag">Motion</span><span class="card-tag">3D</span></div>
+        <h3 class="card-title">Void Gallery</h3>
+        <p class="card-desc">Immersive virtual exhibition space with generative environments.</p>
+      </div>
+      <div class="card-accent-line"></div>
+    </div>
+
+    <div class="project-card reveal" data-delay="200">
+      <span class="card-number">03</span>
+      <div class="card-content">
+        <div class="card-tags"><span class="card-tag">Product</span></div>
+        <h3 class="card-title">Tonal</h3>
+        <p class="card-desc">Music creation tool with spatial audio interface.</p>
+      </div>
+      <div class="card-accent-line"></div>
+    </div>
+
+    <div class="project-card reveal" data-delay="300">
+      <span class="card-number">04</span>
+      <div class="card-content">
+        <div class="card-tags"><span class="card-tag">Editorial</span></div>
+        <h3 class="card-title">Elsewhere Mag</h3>
+        <p class="card-desc">Digital magazine exploring the edges of culture.</p>
+      </div>
+      <div class="card-accent-line"></div>
+    </div>
+
+    <div class="project-card reveal" data-delay="350">
+      <span class="card-number">05</span>
+      <div class="card-content">
+        <div class="card-tags"><span class="card-tag">Identity</span><span class="card-tag">Print</span></div>
+        <h3 class="card-title">Forma Studio</h3>
+        <p class="card-desc">Rebranding an architecture firm from static to kinetic identity.</p>
+      </div>
+      <div class="card-accent-line"></div>
+    </div>
+
+    <div class="project-card reveal" data-delay="450">
+      <span class="card-number">06</span>
+      <div class="card-content">
+        <div class="card-tags"><span class="card-tag">App</span><span class="card-tag">UX</span><span class="card-tag">Motion</span></div>
+        <h3 class="card-title">Drift</h3>
+        <p class="card-desc">Mindfulness app with generative soundscapes and breathing visuals.</p>
+      </div>
+      <div class="card-accent-line"></div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="about" id="about">
+  <div class="about-text reveal">
+    <span class="section-title">About</span>
+    <h2 class="about-heading">Designing at the<br>intersection of <span class="accent">code</span><br>and emotion.</h2>
+    <p class="about-body">I'm a multidisciplinary designer who believes digital experiences should feel as tactile as physical ones. Every pixel carries weight, every transition tells a story. Based in Brooklyn, working globally.</p>
+    <div class="about-stats">
+      <div class="stat-item">
+        <span class="stat-num">8+</span>
+        <span class="stat-label">Years</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-num">60+</span>
+        <span class="stat-label">Projects</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-num">12</span>
+        <span class="stat-label">Awards</span>
+      </div>
+    </div>
+  </div>
+  <div class="about-canvas-wrap reveal" data-delay="200">
+    <canvas id="constellation-canvas"></canvas>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer" id="contact">
+  <div class="footer-cta reveal">
+    <span>Let's build</span><br>
+    <a href="mailto:hello@novachen.design">something wild.</a>
+  </div>
+  <div class="footer-bottom reveal" data-delay="100">
+    <div class="footer-links">
+      <a href="#">Twitter</a>
+      <a href="#">Dribbble</a>
+      <a href="#">LinkedIn</a>
+      <a href="#">Read.cv</a>
+    </div>
+    <span class="footer-copy">&copy; 2026 Nova Chen. All rights reserved.</span>
+  </div>
+</footer>
+
+<script>
+(function() {
+  'use strict';
+
+  // =========== REDUCED MOTION CHECK ===========
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // =========== CURSOR ===========
+  const cursor = document.getElementById('cursor');
+  const cursorDot = document.getElementById('cursorDot');
+  let mouseX = -100, mouseY = -100;
+  let cursorX = -100, cursorY = -100;
+  let dotX = -100, dotY = -100;
+
+  document.addEventListener('mousemove', e => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+  });
+
+  document.addEventListener('mouseleave', () => {
+    cursor.style.opacity = '0';
+    cursorDot.style.opacity = '0';
+  });
+
+  document.addEventListener('mouseenter', () => {
+    cursor.style.opacity = '1';
+    cursorDot.style.opacity = '1';
+  });
+
+  // =========== HERO NAME (letter-wrapped) ===========
+  const heroName = document.getElementById('heroName');
+  const name = 'NOVA CHEN';
+  heroName.innerHTML = name.split('').map(ch =>
+    ch === ' ' ? ' ' : `<span>${ch}</span>`
+  ).join('');
+
+  // =========== HERO TAGLINE (word-by-word reveal) ===========
+  const tagline = 'Crafting digital experiences that move, breathe, and respond to you.';
+  const heroTagline = document.getElementById('heroTagline');
+  heroTagline.innerHTML = tagline.split(' ').map((word, i) =>
+    `<span class="word" style="animation-delay:${0.6 + i * 0.07}s">${word}</span>`
+  ).join(' ');
+
+  // =========== INTERSECTION OBSERVER FOR REVEALS ===========
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const delay = parseInt(entry.target.dataset.delay || '0', 10);
+        setTimeout(() => entry.target.classList.add('visible'), delay);
+        revealObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+
+  document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+  // =========== SPRING PHYSICS ENGINE ===========
+  class Spring {
+    constructor(stiffness = 150, damping = 12) {
+      this.stiffness = stiffness;
+      this.damping = damping;
+      this.x = 0;
+      this.y = 0;
+      this.vx = 0;
+      this.vy = 0;
+      this.targetX = 0;
+      this.targetY = 0;
+    }
+
+    update(dt) {
+      const ax = -this.stiffness * (this.x - this.targetX) - this.damping * this.vx;
+      const ay = -this.stiffness * (this.y - this.targetY) - this.damping * this.vy;
+      this.vx += ax * dt;
+      this.vy += ay * dt;
+      this.x += this.vx * dt;
+      this.y += this.vy * dt;
+    }
+  }
+
+  // =========== PROJECT CARDS PHYSICS ===========
+  const cards = document.querySelectorAll('.project-card');
+  const cardPhysics = [];
+  const REPULSION_RADIUS = 300;
+  const REPULSION_STRENGTH = 60;
+  const TILT_STRENGTH = 12;
+  let isHoveringCard = false;
+
+  cards.forEach(card => {
+    cardPhysics.push({
+      el: card,
+      spring: new Spring(120, 14),
+      tiltX: 0,
+      tiltY: 0,
+      tiltTargetX: 0,
+      tiltTargetY: 0,
+      floatOffset: Math.random() * Math.PI * 2,
+    });
+
+    card.addEventListener('mouseenter', () => {
+      isHoveringCard = true;
+      cursor.classList.add('hovering-card');
+    });
+    card.addEventListener('mouseleave', () => {
+      isHoveringCard = false;
+      cursor.classList.remove('hovering-card');
+    });
+  });
+
+  // =========== CONSTELLATION CANVAS ===========
+  const canvas = document.getElementById('constellation-canvas');
+  const ctx = canvas.getContext('2d');
+  let particles = [];
+  const PARTICLE_COUNT = 60;
+  const CONNECTION_DIST = 100;
+
+  function resizeCanvas() {
+    const rect = canvas.parentElement.getBoundingClientRect();
+    canvas.width = rect.width * window.devicePixelRatio;
+    canvas.height = rect.height * window.devicePixelRatio;
+    canvas.style.width = rect.width + 'px';
+    canvas.style.height = rect.height + 'px';
+    ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+  }
+
+  function initParticles() {
+    particles = [];
+    const w = canvas.width / window.devicePixelRatio;
+    const h = canvas.height / window.devicePixelRatio;
+    for (let i = 0; i < PARTICLE_COUNT; i++) {
+      particles.push({
+        x: Math.random() * w,
+        y: Math.random() * h,
+        vx: (Math.random() - 0.5) * 0.4,
+        vy: (Math.random() - 0.5) * 0.4,
+        r: Math.random() * 2 + 1,
+      });
+    }
+  }
+
+  function drawConstellation() {
+    const w = canvas.width / window.devicePixelRatio;
+    const h = canvas.height / window.devicePixelRatio;
+    ctx.clearRect(0, 0, w, h);
+
+    // Update positions
+    particles.forEach(p => {
+      p.x += p.vx;
+      p.y += p.vy;
+      if (p.x < 0 || p.x > w) p.vx *= -1;
+      if (p.y < 0 || p.y > h) p.vy *= -1;
+      p.x = Math.max(0, Math.min(w, p.x));
+      p.y = Math.max(0, Math.min(h, p.y));
+    });
+
+    // Draw connections
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i + 1; j < particles.length; j++) {
+        const dx = particles[i].x - particles[j].x;
+        const dy = particles[i].y - particles[j].y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < CONNECTION_DIST) {
+          const alpha = (1 - dist / CONNECTION_DIST) * 0.35;
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.strokeStyle = `rgba(200, 255, 0, ${alpha})`;
+          ctx.lineWidth = 0.5;
+          ctx.stroke();
+        }
+      }
+    }
+
+    // Draw particles
+    particles.forEach(p => {
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(200, 255, 0, 0.6)';
+      ctx.fill();
+    });
+  }
+
+  resizeCanvas();
+  initParticles();
+  window.addEventListener('resize', () => {
+    resizeCanvas();
+    initParticles();
+  });
+
+  // =========== MAIN ANIMATION LOOP ===========
+  let lastTime = performance.now();
+
+  function tick(now) {
+    requestAnimationFrame(tick);
+
+    const rawDt = (now - lastTime) / 1000;
+    const dt = Math.min(rawDt, 0.05); // cap to avoid explosion
+    lastTime = now;
+
+    // Cursor easing
+    cursorX += (mouseX - cursorX) * 0.12;
+    cursorY += (mouseY - cursorY) * 0.12;
+    dotX += (mouseX - dotX) * 0.6;
+    dotY += (mouseY - dotY) * 0.6;
+
+    cursor.style.left = cursorX + 'px';
+    cursor.style.top = cursorY + 'px';
+    cursorDot.style.left = dotX + 'px';
+    cursorDot.style.top = dotY + 'px';
+
+    if (prefersReducedMotion) {
+      drawConstellation();
+      return;
+    }
+
+    const time = now * 0.001;
+
+    // Card physics
+    cardPhysics.forEach((cp, i) => {
+      const rect = cp.el.getBoundingClientRect();
+      const cardCX = rect.left + rect.width / 2;
+      const cardCY = rect.top + rect.height / 2;
+
+      const dx = mouseX - cardCX;
+      const dy = mouseY - cardCY;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+
+      // Floating
+      const floatY = Math.sin(time * 0.8 + cp.floatOffset) * 3;
+
+      // Magnetic repulsion
+      let repX = 0, repY = 0;
+      if (dist < REPULSION_RADIUS && dist > 1) {
+        const force = (1 - dist / REPULSION_RADIUS);
+        const forceEased = force * force * REPULSION_STRENGTH;
+        repX = -(dx / dist) * forceEased;
+        repY = -(dy / dist) * forceEased;
+      }
+
+      cp.spring.targetX = repX;
+      cp.spring.targetY = repY + floatY;
+      cp.spring.update(dt);
+
+      // 3D tilt based on cursor proximity
+      let tiltXTarget = 0, tiltYTarget = 0;
+      if (dist < REPULSION_RADIUS * 1.2) {
+        const relX = (mouseX - rect.left) / rect.width - 0.5;
+        const relY = (mouseY - rect.top) / rect.height - 0.5;
+        const proximity = Math.max(0, 1 - dist / (REPULSION_RADIUS * 1.2));
+        tiltXTarget = -relY * TILT_STRENGTH * proximity;
+        tiltYTarget = relX * TILT_STRENGTH * proximity;
+      }
+
+      cp.tiltX += (tiltXTarget - cp.tiltX) * 0.08;
+      cp.tiltY += (tiltYTarget - cp.tiltY) * 0.08;
+
+      cp.el.style.transform = `translate3d(${cp.spring.x}px, ${cp.spring.y}px, 0) rotateX(${cp.tiltX}deg) rotateY(${cp.tiltY}deg)`;
+    });
+
+    // Constellation
+    drawConstellation();
+  }
+
+  requestAnimationFrame(tick);
+
+  // =========== HOVER EVENTS ON LINKS/BUTTONS ===========
+  document.querySelectorAll('a, button, .hero-name').forEach(el => {
+    el.addEventListener('mouseenter', () => {
+      if (!isHoveringCard) {
+        cursor.style.width = '48px';
+        cursor.style.height = '48px';
+        cursor.style.background = 'rgba(200,255,0,0.04)';
+      }
+    });
+    el.addEventListener('mouseleave', () => {
+      if (!isHoveringCard) {
+        cursor.style.width = '32px';
+        cursor.style.height = '32px';
+        cursor.style.background = 'transparent';
+      }
+    });
+  });
+
+})();
+</script>
+</body>
+</html>

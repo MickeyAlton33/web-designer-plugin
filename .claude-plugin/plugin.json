@@ -1,0 +1,24 @@
+{
+  "name": "web-designer",
+  "displayName": "Web Designer",
+  "description": "Transforms AI code generation into award-winning web design. Injects real design thinking, creative patterns, and anti-AI-aesthetic techniques extracted from 38 of the world's best-designed websites.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Mickey Alton"
+  },
+  "homepage": "https://github.com/MickeyAlton33/web-designer-plugin",
+  "repository": "https://github.com/MickeyAlton33/web-designer-plugin",
+  "license": "MIT",
+  "keywords": [
+    "web-design",
+    "frontend",
+    "css",
+    "ui",
+    "animation",
+    "typography",
+    "creative",
+    "design-patterns",
+    "awwwards",
+    "3d"
+  ]
+}

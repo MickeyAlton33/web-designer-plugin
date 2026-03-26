@@ -1,0 +1,1110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jules Atelier — Studio Ephemera</title>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=DM+Serif+Display&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --cream: #faf3e6;
+  --washi-pink: #ffb5b5;
+  --stamp-red: #c1272d;
+  --graphite: #4a4a4a;
+  --sticky-yellow: #fff9c4;
+  --tape-beige: #d4c5a9;
+  --cork: #8B6914;
+  --coffee: #6b3a1f;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background-color: var(--cream);
+  font-family: 'IBM Plex Sans', sans-serif;
+  color: var(--graphite);
+  overflow-x: hidden;
+  cursor: default;
+  min-height: 100vh;
+  /* Paper texture via noise */
+  background-image:
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+}
+
+/* ===== PAPER SHADOW SYSTEM ===== */
+.paper-shadow {
+  box-shadow:
+    0 1px 1px rgba(0,0,0,0.06),
+    0 2px 2px rgba(0,0,0,0.05),
+    0 4px 4px rgba(0,0,0,0.04),
+    0 6px 8px rgba(0,0,0,0.03),
+    0 8px 16px rgba(0,0,0,0.02);
+}
+
+.paper-shadow-lifted {
+  box-shadow:
+    0 2px 2px rgba(0,0,0,0.05),
+    0 4px 4px rgba(0,0,0,0.05),
+    0 8px 8px rgba(0,0,0,0.04),
+    0 12px 16px rgba(0,0,0,0.04),
+    0 16px 32px rgba(0,0,0,0.03),
+    0 24px 48px rgba(0,0,0,0.02);
+}
+
+/* ===== TAPE STRIPS ===== */
+.tape {
+  position: absolute;
+  width: 80px;
+  height: 26px;
+  background: rgba(212, 197, 169, 0.55);
+  z-index: 10;
+  pointer-events: none;
+  border-radius: 1px;
+  /* subtle tape texture */
+  background-image: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255,255,255,0.15) 20%,
+    transparent 40%,
+    rgba(255,255,255,0.1) 60%,
+    transparent 80%
+  );
+  backdrop-filter: blur(0.5px);
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.tape-pink {
+  background-color: rgba(255, 181, 181, 0.5);
+  background-image: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255,255,255,0.2) 30%,
+    transparent 60%
+  );
+}
+
+.tape-clear {
+  background-color: rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(200, 200, 200, 0.2);
+}
+
+.tape-top { top: -10px; left: 50%; transform: translateX(-50%) rotate(-2deg); }
+.tape-top-left { top: -8px; left: 15px; transform: rotate(-15deg); }
+.tape-top-right { top: -8px; right: 15px; left: auto; transform: rotate(12deg); }
+
+/* ===== SCROLL REVEAL ===== */
+.reveal-item {
+  opacity: 0;
+  transform: scale(0.85) rotate(2deg);
+  transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.reveal-item.revealed {
+  opacity: 1;
+  transform: scale(1) rotate(var(--rot, 0deg));
+}
+
+/* ===== HERO / MASTHEAD ===== */
+.hero {
+  text-align: center;
+  padding: 80px 20px 40px;
+  position: relative;
+}
+
+.masthead {
+  font-family: 'DM Serif Display', serif;
+  font-size: clamp(3.5rem, 10vw, 8rem);
+  letter-spacing: 0.08em;
+  color: var(--graphite);
+  line-height: 1;
+  position: relative;
+  display: inline-block;
+}
+
+.masthead::before {
+  content: '';
+  position: absolute;
+  top: -20px;
+  left: -30px;
+  right: -30px;
+  bottom: -15px;
+  border: 2px solid var(--graphite);
+  opacity: 0.08;
+}
+
+.subtitle {
+  font-family: 'Caveat', cursive;
+  font-size: clamp(1.4rem, 3.5vw, 2.2rem);
+  color: var(--graphite);
+  margin-top: 18px;
+  position: relative;
+  display: inline-block;
+  opacity: 0.75;
+}
+
+.subtitle svg {
+  position: absolute;
+  bottom: -8px;
+  left: -5px;
+  width: calc(100% + 10px);
+  height: 12px;
+  overflow: visible;
+}
+
+/* Coffee ring stain */
+.coffee-ring {
+  position: absolute;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: radial-gradient(
+    ellipse at center,
+    transparent 38%,
+    rgba(107, 58, 31, 0.06) 40%,
+    rgba(107, 58, 31, 0.1) 44%,
+    rgba(107, 58, 31, 0.06) 48%,
+    transparent 52%,
+    rgba(107, 58, 31, 0.03) 54%,
+    transparent 58%
+  );
+  pointer-events: none;
+  z-index: 2;
+}
+
+.coffee-ring-1 { top: 160px; right: 12%; transform: rotate(15deg); }
+.coffee-ring-2 { top: 1800px; left: 5%; width: 100px; height: 100px; transform: rotate(-20deg); }
+
+/* ===== NAVIGATION TABS ===== */
+.nav-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+  padding: 20px 20px 60px;
+  flex-wrap: wrap;
+}
+
+.nav-tab {
+  font-family: 'Caveat', cursive;
+  font-size: 1.25rem;
+  padding: 10px 28px 14px;
+  background: var(--cream);
+  border: none;
+  cursor: pointer;
+  position: relative;
+  color: var(--graphite);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow:
+    0 1px 2px rgba(0,0,0,0.06),
+    0 2px 4px rgba(0,0,0,0.04);
+  border-radius: 6px 6px 0 0;
+  border: 1px solid rgba(0,0,0,0.06);
+  border-bottom: none;
+}
+
+.nav-tab:nth-child(1) { transform: rotate(-1.5deg); }
+.nav-tab:nth-child(2) { transform: rotate(0.8deg) translateY(3px); }
+.nav-tab:nth-child(3) { transform: rotate(-0.5deg) translateY(-2px); }
+.nav-tab:nth-child(4) { transform: rotate(1.2deg) translateY(1px); }
+
+.nav-tab:hover {
+  transform: translateY(-4px) rotate(0deg) !important;
+  box-shadow:
+    0 2px 4px rgba(0,0,0,0.08),
+    0 4px 8px rgba(0,0,0,0.05);
+}
+
+.nav-tab.active {
+  background: #fff;
+  font-weight: 600;
+  z-index: 2;
+}
+
+/* ===== SECTION LABELS ===== */
+.section-label {
+  font-family: 'DM Serif Display', serif;
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  text-align: center;
+  padding: 30px 20px 10px;
+  position: relative;
+}
+
+.section-label .handnote {
+  font-family: 'Caveat', cursive;
+  font-size: 1.1rem;
+  opacity: 0.5;
+  display: block;
+  margin-top: 4px;
+  transform: rotate(-1deg);
+}
+
+/* ===== PROJECTS DESK ===== */
+.projects-desk {
+  position: relative;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 20px 80px;
+  min-height: 900px;
+}
+
+/* ===== PROJECT CARDS (shared) ===== */
+.project-card {
+  position: absolute;
+  cursor: grab;
+  transition: box-shadow 0.35s ease, transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
+}
+
+.project-card:active { cursor: grabbing; }
+
+.project-card:hover {
+  box-shadow:
+    0 4px 6px rgba(0,0,0,0.06),
+    0 8px 12px rgba(0,0,0,0.06),
+    0 16px 24px rgba(0,0,0,0.05),
+    0 24px 48px rgba(0,0,0,0.04);
+}
+
+/* ===== POLAROID ===== */
+.polaroid {
+  background: #fff;
+  padding: 14px 14px 50px;
+  width: 260px;
+}
+
+.polaroid .photo-area {
+  width: 100%;
+  height: 220px;
+  overflow: hidden;
+  position: relative;
+}
+
+.polaroid .photo-area img,
+.polaroid .photo-area .photo-placeholder {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.photo-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Caveat', cursive;
+  font-size: 1.1rem;
+  color: rgba(0,0,0,0.25);
+}
+
+.photo-placeholder-warm {
+  background: linear-gradient(135deg, #e8d5b7 0%, #d4a574 40%, #c49360 70%, #b8845a 100%);
+}
+
+.photo-placeholder-cool {
+  background: linear-gradient(135deg, #a8c0c8 0%, #7fa3b0 40%, #6b92a0 70%, #5a8494 100%);
+}
+
+.polaroid .caption {
+  font-family: 'Caveat', cursive;
+  font-size: 1.15rem;
+  text-align: center;
+  margin-top: 12px;
+  color: var(--graphite);
+  line-height: 1.3;
+}
+
+/* ===== STICKY NOTE ===== */
+.sticky-note {
+  background: var(--sticky-yellow);
+  width: 220px;
+  padding: 30px 22px 22px;
+  font-family: 'Caveat', cursive;
+  font-size: 1.15rem;
+  line-height: 1.5;
+  color: var(--graphite);
+  /* Sticky note curl */
+  background-image: linear-gradient(
+    180deg,
+    var(--sticky-yellow) 0%,
+    #fff7a8 100%
+  );
+  box-shadow:
+    0 1px 1px rgba(0,0,0,0.05),
+    0 2px 4px rgba(0,0,0,0.05),
+    0 4px 8px rgba(0,0,0,0.04),
+    2px 6px 12px rgba(0,0,0,0.03);
+}
+
+.sticky-note .sticky-title {
+  font-weight: 700;
+  font-size: 1.3rem;
+  margin-bottom: 6px;
+  text-decoration: underline;
+  text-decoration-style: wavy;
+  text-underline-offset: 4px;
+  text-decoration-color: rgba(0,0,0,0.2);
+}
+
+/* ===== MAGAZINE CLIPPING ===== */
+.magazine-clip {
+  width: 280px;
+  padding: 24px;
+  background: #fff;
+  clip-path: polygon(
+    2% 0%, 97% 1%, 100% 3%, 99% 98%, 96% 100%, 3% 99%, 0% 97%, 1% 2%
+  );
+}
+
+.magazine-clip .clip-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.5rem;
+  line-height: 1.2;
+  margin-bottom: 10px;
+}
+
+.magazine-clip .clip-body {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 0.85rem;
+  line-height: 1.55;
+  opacity: 0.75;
+}
+
+.magazine-clip .clip-tag {
+  display: inline-block;
+  margin-top: 12px;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  padding: 3px 10px;
+  border: 1px solid var(--graphite);
+  opacity: 0.4;
+}
+
+/* ===== POSTCARD ===== */
+.postcard-card {
+  width: 320px;
+  background: #fffef8;
+  border: 1px solid rgba(0,0,0,0.08);
+  padding: 24px;
+  position: relative;
+}
+
+.postcard-card .postmark {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 70px;
+  height: 70px;
+  border: 2px solid var(--stamp-red);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  transform: rotate(-12deg);
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+.postmark .postmark-text {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 0.55rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--stamp-red);
+  font-weight: 500;
+}
+
+.postmark .postmark-date {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 0.7rem;
+  color: var(--stamp-red);
+  font-weight: 500;
+}
+
+.postcard-card .stamp-box {
+  position: absolute;
+  top: 14px;
+  right: 100px;
+  width: 46px;
+  height: 54px;
+  border: 2px dashed rgba(0,0,0,0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.stamp-box .stamp-inner {
+  width: 34px;
+  height: 42px;
+  background: linear-gradient(135deg, var(--stamp-red) 0%, #d44 60%);
+  opacity: 0.6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-family: 'DM Serif Display', serif;
+  font-size: 0.55rem;
+}
+
+.postcard-card .pc-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.25rem;
+  margin-bottom: 8px;
+  max-width: 180px;
+}
+
+.postcard-card .pc-body {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 0.82rem;
+  line-height: 1.6;
+  opacity: 0.7;
+  margin-top: 8px;
+  max-width: 200px;
+}
+
+.postcard-card .pc-divider {
+  position: absolute;
+  top: 20px;
+  bottom: 20px;
+  right: 130px;
+  width: 1px;
+  background: rgba(0,0,0,0.08);
+}
+
+/* ===== CORNER FOLD ===== */
+.corner-fold::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 30px;
+  height: 30px;
+  background: linear-gradient(
+    225deg,
+    var(--cream) 0%,
+    var(--cream) 50%,
+    rgba(0,0,0,0.04) 50%,
+    rgba(0,0,0,0.08) 100%
+  );
+}
+
+/* ===== STAMP MARK ===== */
+.date-stamp {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 65px;
+  height: 65px;
+  border: 2.5px solid var(--stamp-red);
+  border-radius: 50%;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 0.55rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--stamp-red);
+  opacity: 0.45;
+  transform: rotate(-18deg);
+  pointer-events: none;
+  position: absolute;
+  text-align: center;
+  line-height: 1.3;
+  font-weight: 500;
+}
+
+/* ===== ABOUT / NOTEBOOK ===== */
+.notebook-section {
+  max-width: 800px;
+  margin: 80px auto 60px;
+  padding: 60px 70px 60px 90px;
+  background: #fff;
+  position: relative;
+  min-height: 420px;
+  /* Lined paper */
+  background-image:
+    repeating-linear-gradient(
+      transparent,
+      transparent 31px,
+      rgba(0, 120, 200, 0.09) 31px,
+      rgba(0, 120, 200, 0.09) 32px
+    );
+  background-position: 0 20px;
+  box-shadow:
+    0 1px 2px rgba(0,0,0,0.06),
+    0 4px 8px rgba(0,0,0,0.04),
+    0 8px 16px rgba(0,0,0,0.03),
+    -2px 0 8px rgba(0,0,0,0.02);
+}
+
+/* Red margin line */
+.notebook-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 72px;
+  width: 2px;
+  background: rgba(200, 50, 50, 0.15);
+}
+
+/* Punch holes */
+.notebook-section::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 22px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--cream);
+  border: 1px solid rgba(0,0,0,0.06);
+  box-shadow:
+    0 -100px 0 0 var(--cream),
+    0 -100px 0 1px rgba(0,0,0,0.06),
+    0 100px 0 0 var(--cream),
+    0 100px 0 1px rgba(0,0,0,0.06);
+  transform: translateY(-50%);
+}
+
+.notebook-section h2 {
+  font-family: 'Caveat', cursive;
+  font-size: 2.2rem;
+  margin-bottom: 16px;
+  color: var(--graphite);
+}
+
+.notebook-section p {
+  font-family: 'Caveat', cursive;
+  font-size: 1.35rem;
+  line-height: 2;
+  color: var(--graphite);
+  opacity: 0.85;
+}
+
+/* Margin doodles */
+.doodle {
+  position: absolute;
+  pointer-events: none;
+  opacity: 0.2;
+}
+
+/* ===== CONTACT POSTCARD ===== */
+.contact-postcard {
+  max-width: 600px;
+  margin: 60px auto 100px;
+  background: #fffef8;
+  padding: 50px;
+  position: relative;
+  border: 1px solid rgba(0,0,0,0.06);
+  box-shadow:
+    0 1px 2px rgba(0,0,0,0.06),
+    0 4px 8px rgba(0,0,0,0.04),
+    0 8px 16px rgba(0,0,0,0.03);
+  transform: rotate(-0.8deg);
+}
+
+.contact-postcard h2 {
+  font-family: 'DM Serif Display', serif;
+  font-size: 2rem;
+  margin-bottom: 24px;
+}
+
+.contact-postcard .address-lines {
+  border-bottom: 1px solid rgba(0,0,0,0.1);
+  padding: 12px 0;
+  margin-bottom: 8px;
+  font-family: 'Caveat', cursive;
+  font-size: 1.2rem;
+}
+
+.contact-postcard .address-lines:last-of-type {
+  margin-bottom: 24px;
+}
+
+.contact-postcard input,
+.contact-postcard textarea {
+  width: 100%;
+  border: none;
+  background: transparent;
+  font-family: 'Caveat', cursive;
+  font-size: 1.2rem;
+  color: var(--graphite);
+  outline: none;
+  border-bottom: 1px solid rgba(0,0,0,0.1);
+  padding: 12px 0;
+  margin-bottom: 8px;
+}
+
+.contact-postcard textarea {
+  resize: none;
+  height: 90px;
+  border: 1px solid rgba(0,0,0,0.08);
+  padding: 12px;
+  margin-top: 8px;
+}
+
+.contact-postcard input::placeholder,
+.contact-postcard textarea::placeholder {
+  color: rgba(0,0,0,0.25);
+  font-family: 'Caveat', cursive;
+}
+
+.send-stamp {
+  display: inline-block;
+  margin-top: 20px;
+  padding: 12px 40px;
+  background: transparent;
+  border: 3px solid var(--stamp-red);
+  color: var(--stamp-red);
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.3rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transform: rotate(-2deg);
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  opacity: 0.7;
+  position: relative;
+}
+
+.send-stamp:hover {
+  transform: rotate(0deg) scale(1.05);
+  opacity: 1;
+}
+
+.contact-stamp-mark {
+  position: absolute;
+  top: 20px;
+  right: 30px;
+}
+
+/* ===== FOOTER ===== */
+.footer-note {
+  text-align: center;
+  padding: 20px;
+  font-family: 'Caveat', cursive;
+  font-size: 1rem;
+  opacity: 0.35;
+  padding-bottom: 60px;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 900px) {
+  .projects-desk {
+    min-height: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 40px;
+    padding: 40px 20px 80px;
+  }
+  .project-card {
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+  }
+  .notebook-section {
+    margin: 40px 16px;
+    padding: 40px 30px 40px 50px;
+  }
+  .notebook-section::before { left: 38px; }
+  .notebook-section::after { left: 10px; }
+  .contact-postcard { margin: 40px 16px 80px; padding: 30px; }
+}
+
+@media (max-width: 600px) {
+  .polaroid, .sticky-note, .magazine-clip, .postcard-card {
+    width: 90vw;
+    max-width: 320px;
+  }
+}
+
+/* ===== REDUCED MOTION ===== */
+@media (prefers-reduced-motion: reduce) {
+  .reveal-item {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .project-card {
+    cursor: default;
+    transition: none;
+  }
+  .project-card:hover {
+    transform: none !important;
+  }
+  .nav-tab { transition: none; }
+  .tape { transition: none; }
+}
+
+/* ===== DRAGGING STATE ===== */
+.project-card.dragging {
+  transition: none !important;
+  opacity: 0.92;
+}
+</style>
+</head>
+<body>
+
+<!-- Coffee ring stains -->
+<div class="coffee-ring coffee-ring-1" aria-hidden="true"></div>
+<div class="coffee-ring coffee-ring-2" aria-hidden="true"></div>
+
+<!-- ===== HERO ===== -->
+<header class="hero" id="home">
+  <h1 class="masthead">JULES ATELIER</h1>
+  <p class="subtitle">
+    designer, maker, dreamer
+    <svg viewBox="0 0 200 12" preserveAspectRatio="none" aria-hidden="true">
+      <path d="M2 8 Q 20 2, 40 7 T 80 6 T 120 8 T 160 5 T 198 7"
+            stroke="#4a4a4a" stroke-width="1.5" fill="none" opacity="0.4"
+            stroke-linecap="round"/>
+    </svg>
+  </p>
+  <div class="date-stamp" style="top: 40px; left: 15%; transform: rotate(-22deg);">
+    Est.<br>2019
+  </div>
+</header>
+
+<!-- ===== NAVIGATION ===== -->
+<nav class="nav-tabs" aria-label="Main navigation">
+  <button class="nav-tab active" onclick="smoothScroll('#home')">Home</button>
+  <button class="nav-tab" onclick="smoothScroll('#projects')">Projects</button>
+  <button class="nav-tab" onclick="smoothScroll('#about')">About</button>
+  <button class="nav-tab" onclick="smoothScroll('#contact')">Contact</button>
+</nav>
+
+<!-- ===== PROJECTS ===== -->
+<section id="projects">
+  <div class="section-label reveal-item" style="--rot: 0deg;">
+    Selected Works
+    <span class="handnote">^ my favorites, honestly</span>
+  </div>
+
+  <div class="projects-desk" id="projectsDesk">
+
+    <!-- POLAROID 1 -->
+    <div class="project-card polaroid paper-shadow reveal-item corner-fold"
+         style="top: 20px; left: 5%; --rot: -3deg; transform: rotate(-3deg);"
+         data-rot="-3">
+      <div class="tape tape-pink tape-top"></div>
+      <div class="photo-area">
+        <div class="photo-placeholder photo-placeholder-warm">
+          <span>Botanical Series</span>
+        </div>
+      </div>
+      <div class="caption">Botanical Series &mdash; Spring '24</div>
+    </div>
+
+    <!-- POLAROID 2 -->
+    <div class="project-card polaroid paper-shadow reveal-item"
+         style="top: 340px; left: 58%; --rot: 4deg; transform: rotate(4deg);"
+         data-rot="4">
+      <div class="tape tape-clear tape-top" style="transform: translateX(-50%) rotate(5deg);"></div>
+      <div class="photo-area">
+        <div class="photo-placeholder photo-placeholder-cool">
+          <span>Urban Textures</span>
+        </div>
+      </div>
+      <div class="caption">Urban Textures &mdash; documentary</div>
+      <div class="date-stamp" style="bottom: -30px; right: -20px; transform: rotate(15deg);">
+        Feb<br>2024
+      </div>
+    </div>
+
+    <!-- STICKY NOTE 1 -->
+    <div class="project-card sticky-note reveal-item"
+         style="top: 10px; left: 52%; --rot: 2.5deg; transform: rotate(2.5deg);"
+         data-rot="2.5">
+      <div class="sticky-title">Brand Identity</div>
+      <p>Complete rebrand for a local coffee roaster. Logo, packaging, menus, the whole thing. They loved it. I cried a little.</p>
+    </div>
+
+    <!-- STICKY NOTE 2 -->
+    <div class="project-card sticky-note reveal-item"
+         style="top: 460px; left: 8%; --rot: -1.5deg; transform: rotate(-1.5deg); background-image: linear-gradient(180deg, #ffe0b2 0%, #ffd180 100%); --sticky-alt: true;"
+         data-rot="-1.5">
+      <div class="tape tape-top" style="width: 60px;"></div>
+      <div class="sticky-title">Type Specimen</div>
+      <p>Custom typeface for an indie magazine. Geometric but warm. 6 weights. My proudest nerdy achievement.</p>
+    </div>
+
+    <!-- MAGAZINE CLIPPING -->
+    <div class="project-card magazine-clip paper-shadow reveal-item"
+         style="top: 260px; left: 30%; --rot: -2deg; transform: rotate(-2deg);"
+         data-rot="-2">
+      <div class="tape tape-pink tape-top-left" style="width: 60px;"></div>
+      <div class="tape tape-top-right" style="width: 55px;"></div>
+      <div class="clip-title">The Art of Imperfection</div>
+      <div class="clip-body">
+        A web experience exploring wabi-sabi in digital design. Interactive essay with generative textures and hand-drawn animations. Featured in Typographica.
+      </div>
+      <div class="clip-tag">Interactive &middot; 2024</div>
+    </div>
+
+    <!-- POSTCARD -->
+    <div class="project-card postcard-card paper-shadow reveal-item"
+         style="top: 580px; left: 42%; --rot: 1.8deg; transform: rotate(1.8deg);"
+         data-rot="1.8">
+      <div class="tape tape-clear tape-top" style="width: 100px; transform: translateX(-50%) rotate(-3deg);"></div>
+      <div class="postmark">
+        <span class="postmark-text">Studio</span>
+        <span class="postmark-date">2024</span>
+        <span class="postmark-text">Paris</span>
+      </div>
+      <div class="stamp-box">
+        <div class="stamp-inner">5c</div>
+      </div>
+      <div class="pc-divider"></div>
+      <div class="pc-title">Exhibition Design</div>
+      <div class="pc-body">
+        Spatial design for a photography exhibition at Galerie du Marais. Wayfinding, catalog, and installation graphics. A dream project in every way.
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ===== ABOUT / NOTEBOOK ===== -->
+<section id="about" class="reveal-item" style="--rot: 0deg;">
+  <div class="section-label">
+    About
+    <span class="handnote">(the part where I talk about myself)</span>
+  </div>
+
+  <div class="notebook-section paper-shadow">
+    <!-- Doodles in margin -->
+    <svg class="doodle" style="left: 16px; top: 60px; width: 30px; height: 30px;" viewBox="0 0 30 30" aria-hidden="true">
+      <path d="M15 2 L18 11 L27 11 L20 17 L23 27 L15 21 L7 27 L10 17 L3 11 L12 11 Z"
+            stroke="#4a4a4a" stroke-width="1" fill="none"/>
+    </svg>
+    <svg class="doodle" style="left: 10px; top: 180px; width: 40px; height: 20px;" viewBox="0 0 40 20" aria-hidden="true">
+      <path d="M5 10 Q 10 2, 20 10 T 35 10" stroke="#4a4a4a" stroke-width="1.2" fill="none"/>
+    </svg>
+    <svg class="doodle" style="left: 12px; top: 290px; width: 35px; height: 35px;" viewBox="0 0 35 35" aria-hidden="true">
+      <path d="M5 18 L18 5 L30 18" stroke="#4a4a4a" stroke-width="1" fill="none"/>
+      <path d="M5 22 L18 35 L30 22" stroke="#4a4a4a" stroke-width="1" fill="none" opacity="0.5"/>
+    </svg>
+    <svg class="doodle" style="right: 20px; top: 40px; width: 40px; height: 50px;" viewBox="0 0 40 50" aria-hidden="true">
+      <path d="M20 5 C 35 15, 35 35, 20 45 C 5 35, 5 15, 20 5"
+            stroke="#c1272d" stroke-width="1" fill="none" opacity="0.6"/>
+    </svg>
+    <svg class="doodle" style="right: 15px; bottom: 50px; width: 50px; height: 20px;" viewBox="0 0 50 20" aria-hidden="true">
+      <path d="M2 10 L 12 10 L 12 5 L 22 12 L 12 19 L 12 14 L 2 14 Z"
+            stroke="#4a4a4a" stroke-width="1" fill="none"/>
+    </svg>
+
+    <h2>Hello, it's me</h2>
+    <p>
+      I'm Jules, a designer based in a small studio that's honestly mostly
+      plants and coffee cups at this point. I make things for print and screen
+      -- identities, books, websites, exhibitions, the occasional zine nobody
+      asked for.<br><br>
+      I believe design should feel like something. Not polished to death, but
+      alive, a little rough around the edges. Like a letter from a friend
+      instead of an email from a brand.<br><br>
+      When I'm not designing, I'm probably at a flea market buying old
+      postcards or trying to learn letterpress (again).
+    </p>
+  </div>
+</section>
+
+<!-- ===== CONTACT POSTCARD ===== -->
+<section id="contact" class="reveal-item" style="--rot: 0deg;">
+  <div class="section-label">
+    Say Hello
+    <span class="handnote">I'd love to hear from you</span>
+  </div>
+
+  <div class="contact-postcard paper-shadow">
+    <div class="date-stamp contact-stamp-mark" style="position: absolute;">
+      Air<br>Mail
+    </div>
+    <h2>Postcard</h2>
+    <form onsubmit="event.preventDefault(); this.querySelector('.send-stamp').textContent='SENT!'; return false;">
+      <input type="text" placeholder="Your name..." aria-label="Your name">
+      <input type="email" placeholder="Your email..." aria-label="Your email">
+      <input type="text" placeholder="Subject..." aria-label="Subject">
+      <textarea placeholder="Write your message here..." aria-label="Message"></textarea>
+      <button type="submit" class="send-stamp">SEND</button>
+    </form>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer class="footer-note">
+  handmade with paper, tape &amp; too much coffee &mdash; Jules Atelier, 2024
+</footer>
+
+<script>
+(function() {
+  'use strict';
+
+  // ===== REDUCED MOTION CHECK =====
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // ===== Z-INDEX COUNTER =====
+  let topZ = 100;
+
+  // ===== DRAG FUNCTIONALITY =====
+  if (!prefersReducedMotion) {
+    const cards = document.querySelectorAll('.project-card');
+    let dragCard = null;
+    let offsetX = 0, offsetY = 0;
+    let startX = 0, startY = 0;
+    let isDragging = false;
+
+    cards.forEach(card => {
+      card.addEventListener('pointerdown', function(e) {
+        if (e.button !== 0) return;
+        dragCard = this;
+        const rect = this.getBoundingClientRect();
+        // For absolutely positioned cards
+        const parentRect = this.offsetParent ? this.offsetParent.getBoundingClientRect() : { left: 0, top: 0 };
+
+        startX = e.clientX;
+        startY = e.clientY;
+
+        // Get current position
+        const style = window.getComputedStyle(this);
+        const currentLeft = parseFloat(style.left) || 0;
+        const currentTop = parseFloat(style.top) || 0;
+
+        offsetX = e.clientX - currentLeft;
+        offsetY = e.clientY - currentTop;
+
+        // Bring to front
+        topZ++;
+        this.style.zIndex = topZ;
+
+        this.classList.add('dragging');
+        this.setPointerCapture(e.pointerId);
+        isDragging = false;
+      });
+    });
+
+    document.addEventListener('pointermove', function(e) {
+      if (!dragCard) return;
+
+      const dx = e.clientX - startX;
+      const dy = e.clientY - startY;
+
+      if (!isDragging && (Math.abs(dx) > 3 || Math.abs(dy) > 3)) {
+        isDragging = true;
+      }
+
+      if (isDragging) {
+        const newLeft = e.clientX - offsetX;
+        const newTop = e.clientY - offsetY;
+        dragCard.style.left = newLeft + 'px';
+        dragCard.style.top = newTop + 'px';
+        // Remove base rotation while dragging
+        dragCard.style.transform = 'rotate(0deg) scale(1.03)';
+      }
+    });
+
+    document.addEventListener('pointerup', function(e) {
+      if (!dragCard) return;
+      dragCard.classList.remove('dragging');
+      // Restore rotation
+      const rot = dragCard.getAttribute('data-rot') || '0';
+      dragCard.style.transform = 'rotate(' + rot + 'deg)';
+      dragCard = null;
+      isDragging = false;
+    });
+
+    // ===== HOVER LIFT =====
+    cards.forEach(card => {
+      card.addEventListener('mouseenter', function() {
+        if (this.classList.contains('dragging')) return;
+        const rot = parseFloat(this.getAttribute('data-rot') || '0');
+        this.style.transform = 'rotate(' + (rot * 0.5) + 'deg) translateY(-6px)';
+        this.classList.add('paper-shadow-lifted');
+        this.classList.remove('paper-shadow');
+
+        // Peel tape
+        const tapes = this.querySelectorAll('.tape');
+        tapes.forEach(t => {
+          const currentRot = t.style.transform || '';
+          t.style.transform = currentRot + ' rotate(3deg) translateY(-2px)';
+        });
+      });
+
+      card.addEventListener('mouseleave', function() {
+        if (this.classList.contains('dragging')) return;
+        const rot = this.getAttribute('data-rot') || '0';
+        this.style.transform = 'rotate(' + rot + 'deg)';
+        this.classList.remove('paper-shadow-lifted');
+        this.classList.add('paper-shadow');
+
+        // Reset tape
+        const tapes = this.querySelectorAll('.tape');
+        tapes.forEach(t => {
+          // restore original
+          if (t.classList.contains('tape-top')) {
+            t.style.transform = 'translateX(-50%) rotate(-2deg)';
+          } else if (t.classList.contains('tape-top-left')) {
+            t.style.transform = 'rotate(-15deg)';
+          } else if (t.classList.contains('tape-top-right')) {
+            t.style.transform = 'rotate(12deg)';
+          } else {
+            t.style.transform = '';
+          }
+        });
+      });
+    });
+  }
+
+  // ===== SCROLL REVEAL =====
+  if (!prefersReducedMotion) {
+    const revealItems = document.querySelectorAll('.reveal-item');
+
+    const observer = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          // Stagger based on position
+          const delay = Math.random() * 200;
+          setTimeout(function() {
+            entry.target.classList.add('revealed');
+          }, delay);
+          observer.unobserve(entry.target);
+        }
+      });
+    }, {
+      threshold: 0.1,
+      rootMargin: '0px 0px -40px 0px'
+    });
+
+    revealItems.forEach(function(item) {
+      observer.observe(item);
+    });
+  } else {
+    // Just show everything
+    document.querySelectorAll('.reveal-item').forEach(function(item) {
+      item.classList.add('revealed');
+    });
+  }
+
+  // ===== NAV TAB ACTIVE STATE =====
+  document.querySelectorAll('.nav-tab').forEach(function(tab) {
+    tab.addEventListener('click', function() {
+      document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+      this.classList.add('active');
+    });
+  });
+
+  // ===== SMOOTH SCROLL =====
+  window.smoothScroll = function(selector) {
+    const el = document.querySelector(selector);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,18 @@
+{
+  "name": "web-designer-plugin",
+  "version": "1.0.0",
+  "description": "Award-winning web design skill for Claude Code, Cursor, and Copilot",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MickeyAlton33/web-designer-plugin"
+  },
+  "keywords": [
+    "claude-code",
+    "plugin",
+    "web-design",
+    "frontend",
+    "css",
+    "creative"
+  ]
+}
